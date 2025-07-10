@@ -1,0 +1,187 @@
+import { useState, useMemo } from "react";
+import type { Task, NewTask, FilterStatus, FilterPriority, SortBy, SortOrder } from "../types/task";
+import { getNextStatus } from "../utils/taskUtils";
+
+const initialTasks: Task[] = [
+	{
+		id: "1",
+		title: "Finaliser le rapport mensuel",
+		description: "Compiler les données et créer le rapport pour la direction",
+		category: "Travail",
+		priority: 1, // critical
+		tags: ["rapport", "urgent", "direction"],
+		status: 2, // in progress
+		recurrence: "monthly",
+		dueDate: new Date("2025-01-15"),
+		startDate: new Date("2025-01-05"),
+		notes: "Important pour la réunion du conseil d'administration",
+		createdAt: new Date("2025-01-05"),
+	},
+	{
+		id: "2",
+		title: "Réunion équipe projet",
+		description: "Point hebdomadaire avec l'équipe de développement",
+		category: "Meetings",
+		priority: 3, // moderate
+		tags: ["réunion", "équipe", "hebdomadaire"],
+		status: 7, // closed
+		recurrence: "weekly",
+		dueDate: new Date("2025-01-10"),
+		startDate: new Date("2025-01-03"),
+		notes: "Préparer l'ordre du jour avant la réunion",
+		createdAt: new Date("2025-01-03"),
+	},
+	{
+		id: "3",
+		title: "Révision budget 2025",
+		description: "Analyser les dépenses et ajuster le budget prévisionnel",
+		category: "Finance",
+		priority: 2, // high
+		tags: ["budget", "analyse", "2025"],
+		status: 1, // new
+		recurrence: "yearly",
+		dueDate: new Date("2025-01-20"),
+		startDate: new Date("2025-01-02"),
+		notes: "Consulter les rapports financiers du Q4 2024",
+		createdAt: new Date("2025-01-02"),
+	},
+];
+
+const initialNewTask: NewTask = {
+	title: "",
+	description: "",
+	category: "",
+	priority: 3, // moderate par défaut
+	tags: [],
+	status: 1, // new par défaut
+	recurrence: "none",
+	dueDate: "",
+	startDate: "",
+	notes: "",
+};
+
+export const useTasks = () => {
+	const [tasks, setTasks] = useState<Task[]>(initialTasks);
+	const [newTask, setNewTask] = useState<NewTask>(initialNewTask);
+	const [isAddingTask, setIsAddingTask] = useState(false);
+
+	// Filtres et tri
+	const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
+	const [filterPriority, setFilterPriority] = useState<FilterPriority>("all");
+	const [filterCategory, setFilterCategory] = useState<string>("all");
+	const [sortBy, setSortBy] = useState<SortBy>("dueDate");
+	const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
+
+	const addTask = () => {
+		if (newTask.title.trim()) {
+			const task: Task = {
+				id: Date.now().toString(),
+				title: newTask.title.trim(),
+				description: newTask.description.trim(),
+				category: newTask.category.trim(),
+				priority: newTask.priority,
+				tags: newTask.tags,
+				status: newTask.status,
+				recurrence: newTask.recurrence,
+				dueDate: newTask.dueDate ? new Date(newTask.dueDate) : undefined,
+				startDate: newTask.startDate ? new Date(newTask.startDate) : undefined,
+				notes: newTask.notes.trim(),
+				createdAt: new Date(),
+			};
+			setTasks([...tasks, task]);
+			setNewTask(initialNewTask);
+			setIsAddingTask(false);
+		}
+	};
+
+	const toggleTask = (id: string) => {
+		setTasks(
+			tasks.map((task) => {
+				if (task.id === id) {
+					return { ...task, status: getNextStatus(task.status) };
+				}
+				return task;
+			})
+		);
+	};
+
+	const deleteTask = (id: string) => {
+		setTasks(tasks.filter((task) => task.id !== id));
+	};
+
+	// Logique de filtrage et tri
+	const filteredAndSortedTasks = useMemo(() => {
+		let filtered = tasks;
+
+		// Filtrage par statut
+		if (filterStatus !== "all") {
+			filtered = filtered.filter((task) => task.status === filterStatus);
+		}
+
+		// Filtrage par priorité
+		if (filterPriority !== "all") {
+			filtered = filtered.filter((task) => task.priority === filterPriority);
+		}
+
+		// Filtrage par catégorie
+		if (filterCategory !== "all") {
+			filtered = filtered.filter((task) => task.category === filterCategory);
+		}
+
+		// Tri
+		const sorted = [...filtered].sort((a, b) => {
+			let comparison = 0;
+
+			switch (sortBy) {
+				case "title":
+					comparison = a.title.localeCompare(b.title);
+					break;
+				case "priority": {
+					// Priorités : 1 (critique) > 2 (haute) > 3 (modérée) > 4 (basse) > 5 (planification)
+					comparison = a.priority - b.priority;
+					break;
+				}
+				case "status": {
+					// Ordre métier des statuts : 1 (nouveau) < 2 (en cours) < 3 (en attente) < 7 (fermé) < 8 (annulé)
+					comparison = a.status - b.status;
+					break;
+				}
+				case "createdAt":
+					comparison = a.createdAt.getTime() - b.createdAt.getTime();
+					break;
+				case "dueDate":
+					if (!a.dueDate && !b.dueDate) comparison = 0;
+					else if (!a.dueDate) comparison = 1;
+					else if (!b.dueDate) comparison = -1;
+					else comparison = a.dueDate.getTime() - b.dueDate.getTime();
+					break;
+			}
+
+			return sortOrder === "desc" ? -comparison : comparison;
+		});
+
+		return sorted;
+	}, [tasks, filterStatus, filterPriority, filterCategory, sortBy, sortOrder]);
+
+	return {
+		tasks,
+		newTask,
+		setNewTask,
+		isAddingTask,
+		setIsAddingTask,
+		filterStatus,
+		setFilterStatus,
+		filterPriority,
+		setFilterPriority,
+		filterCategory,
+		setFilterCategory,
+		sortBy,
+		setSortBy,
+		sortOrder,
+		setSortOrder,
+		filteredAndSortedTasks,
+		addTask,
+		toggleTask,
+		deleteTask,
+	};
+};
