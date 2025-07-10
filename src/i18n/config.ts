@@ -29,6 +29,27 @@ const resources = {
       accessibility: {
         openMainMenu: "Open main menu",
         closeMenu: "Close menu"
+      },
+      // Tasks
+      tasks: {
+        title: "Tasks",
+        subtitle: "Manage your daily tasks and stay organized",
+        addTask: "Add Task",
+        newTask: "New Task",
+        taskTitle: "Title",
+        taskTitlePlaceholder: "Enter task title...",
+        taskDescription: "Description",
+        taskDescriptionPlaceholder: "Enter task description...",
+        priority: "Priority",
+        priorityLow: "Low",
+        priorityMedium: "Medium",
+        priorityHigh: "High",
+        dueDate: "Due Date",
+        cancel: "Cancel",
+        add: "Add",
+        noTasks: "No tasks yet. Add your first task to get started!",
+        created: "Created",
+        due: "Due"
       }
     }
   },
@@ -58,6 +79,27 @@ const resources = {
       accessibility: {
         openMainMenu: "Ouvrir le menu principal",
         closeMenu: "Fermer le menu"
+      },
+      // Tasks
+      tasks: {
+        title: "Tâches",
+        subtitle: "Gérez vos tâches quotidiennes et restez organisé",
+        addTask: "Ajouter une tâche",
+        newTask: "Nouvelle tâche",
+        taskTitle: "Titre",
+        taskTitlePlaceholder: "Saisissez le titre de la tâche...",
+        taskDescription: "Description",
+        taskDescriptionPlaceholder: "Saisissez la description de la tâche...",
+        priority: "Priorité",
+        priorityLow: "Faible",
+        priorityMedium: "Moyenne",
+        priorityHigh: "Élevée",
+        dueDate: "Date d'échéance",
+        cancel: "Annuler",
+        add: "Ajouter",
+        noTasks: "Aucune tâche pour le moment. Ajoutez votre première tâche pour commencer !",
+        created: "Créée le",
+        due: "Échéance"
       }
     }
   }
