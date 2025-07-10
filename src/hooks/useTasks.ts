@@ -45,6 +45,132 @@ const initialTasks: Task[] = [
 		notes: "Consulter les rapports financiers du Q4 2024",
 		createdAt: new Date("2025-01-02"),
 	},
+	{
+		id: "4",
+		title: "Formation sécurité informatique",
+		description: "Module e-learning obligatoire sur la cybersécurité",
+		category: "Formation",
+		priority: 4, // low
+		tags: ["formation", "sécurité", "IT"],
+		status: 1, // new
+		recurrence: "yearly",
+		dueDate: new Date("2025-02-01"),
+		startDate: new Date("2025-01-15"),
+		notes: "Certificat requis pour le renouvellement des accès",
+		createdAt: new Date("2025-01-08"),
+	},
+	{
+		id: "5",
+		title: "Développer API REST",
+		description: "Créer les endpoints pour le module utilisateurs",
+		category: "Développement",
+		priority: 1, // critical
+		tags: ["API", "backend", "users"],
+		status: 2, // in progress
+		recurrence: "none",
+		dueDate: new Date("2025-01-18"),
+		startDate: new Date("2025-01-10"),
+		notes: "Utiliser FastAPI avec authentification JWT",
+		createdAt: new Date("2025-01-10"),
+	},
+	{
+		id: "6",
+		title: "Planifier les vacances d'été",
+		description: "Choisir la destination et réserver les billets",
+		category: "Personnel",
+		priority: 4, // low
+		tags: ["vacances", "famille", "voyage"],
+		status: 3, // on hold
+		recurrence: "none",
+		dueDate: new Date("2025-03-01"),
+		startDate: new Date("2025-01-20"),
+		notes: "Attendre les promotions de février avant de réserver",
+		createdAt: new Date("2025-01-07"),
+	},
+	{
+		id: "7",
+		title: "Mise à jour documentation",
+		description: "Réviser et mettre à jour la documentation technique",
+		category: "Documentation",
+		priority: 3, // moderate
+		tags: ["docs", "technique", "update"],
+		status: 7, // closed
+		recurrence: "monthly",
+		dueDate: new Date("2025-01-12"),
+		startDate: new Date("2025-01-01"),
+		notes: "Inclure les nouvelles fonctionnalités du sprint 12",
+		createdAt: new Date("2025-01-01"),
+	},
+	{
+		id: "8",
+		title: "Entretien véhicule",
+		description: "Vidange et contrôle technique annuel",
+		category: "Personnel",
+		priority: 2, // high
+		tags: ["voiture", "entretien", "contrôle"],
+		status: 1, // new
+		recurrence: "yearly",
+		dueDate: new Date("2025-01-25"),
+		startDate: undefined,
+		notes: "RDV chez le concessionnaire, penser aux papiers",
+		createdAt: new Date("2025-01-06"),
+	},
+	{
+		id: "9",
+		title: "Optimiser performances base de données",
+		description: "Analyser et optimiser les requêtes lentes",
+		category: "Développement",
+		priority: 2, // high
+		tags: ["database", "performance", "SQL"],
+		status: 2, // in progress
+		recurrence: "none",
+		dueDate: new Date("2025-01-22"),
+		startDate: new Date("2025-01-12"),
+		notes: "Utiliser EXPLAIN ANALYZE pour identifier les goulots",
+		createdAt: new Date("2025-01-12"),
+	},
+	{
+		id: "10",
+		title: "Préparer présentation client",
+		description: "Slides pour demo du nouveau produit",
+		category: "Commercial",
+		priority: 1, // critical
+		tags: ["présentation", "client", "demo"],
+		status: 3, // on hold
+		recurrence: "none",
+		dueDate: new Date("2025-01-16"),
+		startDate: new Date("2025-01-14"),
+		notes: "Attendre validation des fonctionnalités par l'équipe produit",
+		createdAt: new Date("2025-01-14"),
+	},
+	{
+		id: "11",
+		title: "Exercice quotidien",
+		description: "30 minutes de sport chaque matin",
+		category: "Santé",
+		priority: 3, // moderate
+		tags: ["sport", "santé", "routine"],
+		status: 2, // in progress
+		recurrence: "daily",
+		dueDate: undefined,
+		startDate: new Date("2025-01-01"),
+		notes: "Objectif : maintenir la régularité pendant 3 mois",
+		createdAt: new Date("2025-01-01"),
+	},
+	{
+		id: "12",
+		title: "Audit sécurité serveurs",
+		description: "Vérification complète de la sécurité infrastructure",
+		category: "Sécurité",
+		priority: 1, // critical
+		tags: ["audit", "sécurité", "serveurs"],
+		status: 8, // canceled
+		recurrence: "none",
+		dueDate: new Date("2025-01-11"),
+		startDate: new Date("2025-01-09"),
+		notes: "Reporté suite à la migration cloud prévue",
+		createdAt: new Date("2025-01-09"),
+	},
 ];
 
 const initialNewTask: NewTask = {
