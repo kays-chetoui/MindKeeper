@@ -99,7 +99,21 @@ const resources = {
         recurrenceDaily: "Daily",
         recurrenceWeekly: "Weekly",
         recurrenceMonthly: "Monthly",
-        recurrenceYearly: "Yearly"
+        recurrenceYearly: "Yearly",
+        noNotes: "No notes",
+        // Configuration des colonnes
+        configureColumns: "Configure Columns",
+        configureColumnsDescription: "Select which columns to display and drag to reorder them.",
+        moveUp: "Move up",
+        moveDown: "Move down",
+        hideColumn: "Hide column",
+        showColumn: "Show column",
+        resetToDefault: "Reset to default"
+      },
+      // Common
+      common: {
+        cancel: "Cancel",
+        save: "Save"
       }
     }
   },
@@ -199,7 +213,21 @@ const resources = {
         recurrenceDaily: "Quotidienne",
         recurrenceWeekly: "Hebdomadaire",
         recurrenceMonthly: "Mensuelle",
-        recurrenceYearly: "Annuelle"
+        recurrenceYearly: "Annuelle",
+        noNotes: "Aucune note",
+        // Configuration des colonnes
+        configureColumns: "Configurer les colonnes",
+        configureColumnsDescription: "Sélectionnez les colonnes à afficher et faites-les glisser pour les réorganiser.",
+        moveUp: "Monter",
+        moveDown: "Descendre",
+        hideColumn: "Masquer la colonne",
+        showColumn: "Afficher la colonne",
+        resetToDefault: "Remettre par défaut"
+      },
+      // Common
+      common: {
+        cancel: "Annuler",
+        save: "Sauvegarder"
       }
     }
   }

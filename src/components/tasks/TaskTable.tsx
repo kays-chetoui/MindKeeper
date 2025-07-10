@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon, Cog6ToothIcon } from "@heroicons/react/24/outline";
 import type { Task } from "../../types/task";
+import type { TableColumn } from "../../types/columns";
 import { getPriorityColor, getStatusColor, formatDate, isTaskOverdue } from "../../utils/taskUtils";
+import { useTableColumns } from "../../hooks/useTableColumns";
+import { ColumnConfigModal } from "./ColumnConfigModal";
 
 interface TaskTableProps {
 	tasks: Task[];
@@ -12,6 +15,96 @@ interface TaskTableProps {
 
 export const TaskTable: React.FC<TaskTableProps> = ({ tasks, totalTasksCount, onDeleteTask }) => {
 	const { t } = useTranslation();
+	const { columns, visibleColumns, toggleColumnVisibility, reorderColumns, resetToDefault } = useTableColumns();
+	const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
+
+	const renderCell = (task: Task, column: TableColumn) => {
+		switch (column.id) {
+			case "title":
+				return (
+					<div className="max-w-xs">
+						<h3 className={`font-semibold text-sm ${task.status === 7 ? "line-through text-gray-500" : "text-gray-900"}`}>{task.title}</h3>
+					</div>
+				);
+
+			case "description":
+				return (
+					<div className="max-w-sm">
+						{task.description ? <p className="text-sm text-gray-600 line-clamp-2">{task.description}</p> : <span className="text-sm text-gray-400 italic">{t("tasks.noDescription")}</span>}
+					</div>
+				);
+
+			case "category":
+				return task.category ? (
+					<span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 border border-purple-200">{task.category}</span>
+				) : (
+					<span className="text-sm text-gray-400 italic">{t("tasks.noCategory")}</span>
+				);
+
+			case "priority":
+				return <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getPriorityColor(task.priority)}`}>{t(`tasks.priority${task.priority}`)}</span>;
+
+			case "status":
+				return <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getStatusColor(task.status)}`}>{t(`tasks.status${task.status}`)}</span>;
+
+			case "tags":
+				return (
+					<div className="flex flex-wrap gap-0.5 max-w-xs">
+						{task.tags.length > 0 ? (
+							task.tags.slice(0, 2).map((tag, tagIndex) => (
+								<span key={tagIndex} className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
+									{tag}
+								</span>
+							))
+						) : (
+							<span className="text-sm text-gray-400 italic">{t("tasks.noTags")}</span>
+						)}
+						{task.tags.length > 2 && <span className="text-xs text-gray-500 ml-1">+{task.tags.length - 2}</span>}
+					</div>
+				);
+
+			case "recurrence":
+				return (
+					<span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200">
+						{t(`tasks.recurrence${task.recurrence.charAt(0).toUpperCase() + task.recurrence.slice(1)}`)}
+					</span>
+				);
+
+			case "startDate":
+				return <span className="text-sm text-gray-600">{task.startDate ? formatDate(task.startDate) : <span className="text-gray-400 italic">{t("tasks.noStartDate")}</span>}</span>;
+
+			case "dueDate":
+				return task.dueDate ? (
+					<span className={`text-sm ${isTaskOverdue(task) ? "text-red-600 font-semibold" : "text-gray-600"}`}>{formatDate(task.dueDate)}</span>
+				) : (
+					<span className="text-sm text-gray-400 italic">{t("tasks.noDueDate")}</span>
+				);
+
+			case "notes":
+				return (
+					<div className="max-w-xs">
+						{task.notes ? <p className="text-sm text-gray-600 line-clamp-2">{task.notes}</p> : <span className="text-sm text-gray-400 italic">{t("tasks.noNotes")}</span>}
+					</div>
+				);
+
+			case "createdAt":
+				return <span className="text-sm text-gray-600">{formatDate(task.createdAt)}</span>;
+
+			case "actions":
+				return (
+					<button
+						onClick={() => onDeleteTask(task.id)}
+						className="inline-flex items-center p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
+						title={t("tasks.deleteTask")}
+					>
+						<XMarkIcon className="h-4 w-4" />
+					</button>
+				);
+
+			default:
+				return null;
+		}
+	};
 
 	if (tasks.length === 0) {
 		return (
@@ -31,11 +124,21 @@ export const TaskTable: React.FC<TaskTableProps> = ({ tasks, totalTasksCount, on
 					<h2 className="text-lg sm:text-xl font-semibold text-gray-900">
 						{tasks.length} {tasks.length <= 1 ? t("tasks.task") : t("tasks.tasks")}
 					</h2>
-					{tasks.length !== totalTasksCount && (
-						<span className="text-sm text-gray-500">
-							({totalTasksCount} {t("tasks.total")})
-						</span>
-					)}
+					<div className="flex items-center space-x-3">
+						{tasks.length !== totalTasksCount && (
+							<span className="text-sm text-gray-500">
+								({totalTasksCount} {t("tasks.total")})
+							</span>
+						)}
+						<button
+							onClick={() => setIsConfigModalOpen(true)}
+							className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 hover:text-gray-700 transition-colors"
+							title={t("tasks.configureColumns")}
+						>
+							<Cog6ToothIcon className="h-4 w-4 mr-1" />
+							{t("tasks.configureColumns")}
+						</button>
+					</div>
 				</div>
 			</div>
 
@@ -146,18 +249,14 @@ export const TaskTable: React.FC<TaskTableProps> = ({ tasks, totalTasksCount, on
 					<table className="w-full min-w-max">
 						<thead className="bg-gray-50/70">
 							<tr>
-								<th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider min-w-0">{t("tasks.taskTitle")}</th>
-								<th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider min-w-0">{t("tasks.taskDescription")}</th>
-								<th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{t("tasks.category")}</th>
-								<th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{t("tasks.priority")}</th>
-								<th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{t("tasks.status")}</th>
-								<th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{t("tasks.tags")}</th>
-								<th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{t("tasks.recurrence")}</th>
-								<th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{t("tasks.startDate")}</th>
-								<th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{t("tasks.dueDate")}</th>
-								<th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{t("tasks.notes")}</th>
-								<th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{t("tasks.createdAt")}</th>
-								<th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider w-16">{t("tasks.actions")}</th>
+								{visibleColumns.map((column) => (
+									<th
+										key={column.id}
+										className={`px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider ${column.id === "actions" ? "text-right w-16" : "min-w-0"}`}
+									>
+										{t(column.labelKey)}
+									</th>
+								))}
 							</tr>
 						</thead>
 						<tbody className="divide-y divide-gray-200/60">
@@ -168,116 +267,38 @@ export const TaskTable: React.FC<TaskTableProps> = ({ tasks, totalTasksCount, on
 										index % 2 === 0 ? "bg-white/40" : "bg-gray-50/20"
 									}`}
 								>
-									{/* Title */}
-									<td className="px-6 py-4">
-										<div className="max-w-xs">
-											<h3 className={`font-semibold text-sm ${task.status === 7 ? "line-through text-gray-500" : "text-gray-900"}`}>{task.title}</h3>
-										</div>
-									</td>
-
-									{/* Description */}
-									<td className="px-6 py-4">
-										<div className="max-w-sm">
-											{task.description ? (
-												<p className="text-sm text-gray-600 line-clamp-2">{task.description}</p>
-											) : (
-												<span className="text-sm text-gray-400 italic">{t("tasks.noDescription")}</span>
-											)}
-										</div>
-									</td>
-
-									{/* Category */}
-									<td className="px-6 py-4 whitespace-nowrap">
-										{task.category ? (
-											<span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 border border-purple-200">
-												{task.category}
-											</span>
-										) : (
-											<span className="text-sm text-gray-400 italic">{t("tasks.noCategory")}</span>
-										)}
-									</td>
-
-									{/* Priority */}
-									<td className="px-6 py-4 whitespace-nowrap">
-										<span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getPriorityColor(task.priority)}`}>
-											{t(`tasks.priority${task.priority}`)}
-										</span>
-									</td>
-
-									{/* Status */}
-									<td className="px-6 py-4 whitespace-nowrap">
-										<span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getStatusColor(task.status)}`}>
-											{t(`tasks.status${task.status}`)}
-										</span>
-									</td>
-
-									{/* Tags */}
-									<td className="px-6 py-4">
-										<div className="flex flex-wrap gap-0.5 max-w-xs">
-											{task.tags.length > 0 ? (
-												task.tags.slice(0, 2).map((tag, tagIndex) => (
-													<span key={tagIndex} className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
-														{tag}
-													</span>
-												))
-											) : (
-												<span className="text-sm text-gray-400 italic">{t("tasks.noTags")}</span>
-											)}
-											{task.tags.length > 2 && <span className="text-xs text-gray-500 ml-1">+{task.tags.length - 2}</span>}
-										</div>
-									</td>
-
-									{/* Recurrence */}
-									<td className="px-6 py-4 whitespace-nowrap">
-										<span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200">
-											{t(`tasks.recurrence${task.recurrence.charAt(0).toUpperCase() + task.recurrence.slice(1)}`)}
-										</span>
-									</td>
-
-									{/* Start Date */}
-									<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-										{task.startDate ? formatDate(task.startDate) : <span className="text-gray-400 italic">{t("tasks.noStartDate")}</span>}
-									</td>
-
-									{/* Due Date */}
-									<td className="px-6 py-4 whitespace-nowrap">
-										{task.dueDate ? (
-											<span className={`text-sm ${isTaskOverdue(task) ? "text-red-600 font-semibold" : "text-gray-600"}`}>{formatDate(task.dueDate)}</span>
-										) : (
-											<span className="text-sm text-gray-400 italic">{t("tasks.noDueDate")}</span>
-										)}
-									</td>
-
-									{/* Notes */}
-									<td className="px-6 py-4">
-										<div className="max-w-xs">
-											{task.notes ? (
-												<p className="text-sm text-gray-600 line-clamp-2">{task.notes}</p>
-											) : (
-												<span className="text-sm text-gray-400 italic">{t("tasks.noNotes")}</span>
-											)}
-										</div>
-									</td>
-
-									{/* Created At */}
-									<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{formatDate(task.createdAt)}</td>
-
-									{/* Actions */}
-									<td className="px-6 py-4 whitespace-nowrap text-right">
-										<button
-											onClick={() => onDeleteTask(task.id)}
-											className="inline-flex items-center p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
-											title={t("tasks.deleteTask")}
+									{visibleColumns.map((column) => (
+										<td
+											key={column.id}
+											className={`px-6 py-4 ${
+												column.id === "actions"
+													? "text-right"
+													: column.id === "startDate" || column.id === "dueDate" || column.id === "createdAt"
+													? "whitespace-nowrap"
+													: column.id === "category" || column.id === "priority" || column.id === "status" || column.id === "recurrence"
+													? "whitespace-nowrap"
+													: ""
+											}`}
 										>
-											<XMarkIcon className="h-4 w-4" />
-										</button>
-									</td>
+											{renderCell(task, column)}
+										</td>
+									))}
 								</tr>
 							))}
 						</tbody>
 					</table>
 				</div>
 			</div>
+
+			{/* Modal de configuration des colonnes */}
+			<ColumnConfigModal
+				isOpen={isConfigModalOpen}
+				onClose={() => setIsConfigModalOpen(false)}
+				columns={columns}
+				onToggleColumn={toggleColumnVisibility}
+				onReorderColumns={reorderColumns}
+				onResetToDefault={resetToDefault}
+			/>
 		</div>
 	);
 };
