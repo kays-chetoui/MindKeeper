@@ -27,7 +27,6 @@ const TasksPage: React.FC = () => {
 		setSortOrder,
 		filteredAndSortedTasks,
 		addTask,
-		toggleTask,
 		deleteTask,
 	} = useTasks();
 
@@ -75,7 +74,7 @@ const TasksPage: React.FC = () => {
 				{isAddingTask && <TaskForm newTask={newTask} setNewTask={setNewTask} onSubmit={addTask} onCancel={() => setIsAddingTask(false)} />}
 
 				{/* Tasks Table */}
-				<TaskTable tasks={filteredAndSortedTasks} totalTasksCount={tasks.length} onToggleTask={toggleTask} onDeleteTask={deleteTask} />
+				<TaskTable tasks={filteredAndSortedTasks} totalTasksCount={tasks.length} onDeleteTask={deleteTask} />
 			</div>
 		</div>
 	);

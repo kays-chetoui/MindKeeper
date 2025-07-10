@@ -1,17 +1,16 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import type { Task } from "../../types/task";
 import { getPriorityColor, getStatusColor, formatDate, isTaskOverdue } from "../../utils/taskUtils";
 
 interface TaskTableProps {
 	tasks: Task[];
 	totalTasksCount: number;
-	onToggleTask: (id: string) => void;
 	onDeleteTask: (id: string) => void;
 }
 
-export const TaskTable: React.FC<TaskTableProps> = ({ tasks, totalTasksCount, onToggleTask, onDeleteTask }) => {
+export const TaskTable: React.FC<TaskTableProps> = ({ tasks, totalTasksCount, onDeleteTask }) => {
 	const { t } = useTranslation();
 
 	if (tasks.length === 0) {
@@ -53,16 +52,6 @@ export const TaskTable: React.FC<TaskTableProps> = ({ tasks, totalTasksCount, on
 							{/* En-tête de la carte */}
 							<div className="flex items-start justify-between mb-3">
 								<div className="flex items-start space-x-3 flex-1 min-w-0">
-									{/* Status Toggle */}
-									<button
-										onClick={() => onToggleTask(task.id)}
-										className={`mt-1 h-5 w-5 rounded border-2 flex items-center justify-center transition-all duration-200 shrink-0 ${
-											task.status === 7 ? "bg-indigo-600 border-indigo-600 text-white shadow-sm" : "border-gray-300 hover:border-indigo-600 hover:bg-indigo-50"
-										}`}
-									>
-										{task.status === 7 && <CheckIcon className="h-3 w-3" />}
-									</button>
-
 									{/* Titre et description */}
 									<div className="flex-1 min-w-0">
 										<h3 className={`font-semibold text-sm sm:text-base ${task.status === 7 ? "line-through text-gray-500" : "text-gray-900"}`}>{task.title}</h3>
@@ -104,16 +93,23 @@ export const TaskTable: React.FC<TaskTableProps> = ({ tasks, totalTasksCount, on
 								{/* Ligne 3: Tags (si présents) */}
 								{task.tags.length > 0 && (
 									<div className="flex flex-wrap gap-1">
-										{task.tags.slice(0, 4).map((tag, tagIndex) => (
-											<span key={tagIndex} className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800">
+										{task.tags.slice(0, 2).map((tag, tagIndex) => (
+											<span key={tagIndex} className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
 												{tag}
 											</span>
 										))}
-										{task.tags.length > 4 && <span className="text-xs text-gray-500 px-2 py-1">+{task.tags.length - 4}</span>}
+										{task.tags.length > 2 && <span className="text-xs text-gray-500 px-1">+{task.tags.length - 2}</span>}
 									</div>
 								)}
 
-								{/* Ligne 4: Dates */}
+								{/* Ligne 4: Recurrence */}
+								<div>
+									<span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200">
+										{t(`tasks.recurrence${task.recurrence.charAt(0).toUpperCase() + task.recurrence.slice(1)}`)}
+									</span>
+								</div>
+
+								{/* Ligne 5: Dates */}
 								<div className="flex flex-wrap gap-4 text-xs sm:text-sm text-gray-600">
 									{task.startDate && (
 										<div>
@@ -126,7 +122,18 @@ export const TaskTable: React.FC<TaskTableProps> = ({ tasks, totalTasksCount, on
 											<span className={isTaskOverdue(task) ? "text-red-600 font-semibold" : ""}>{formatDate(task.dueDate)}</span>
 										</div>
 									)}
+									<div>
+										<span className="font-medium">{t("tasks.createdDate")}:</span> {formatDate(task.createdAt)}
+									</div>
 								</div>
+
+								{/* Ligne 6: Notes (si présentes) */}
+								{task.notes && (
+									<div>
+										<span className="font-medium text-xs sm:text-sm text-gray-600">{t("tasks.notes")}:</span>
+										<p className="text-xs sm:text-sm text-gray-600 mt-1 line-clamp-2">{task.notes}</p>
+									</div>
+								)}
 							</div>
 						</div>
 					))}
@@ -139,15 +146,17 @@ export const TaskTable: React.FC<TaskTableProps> = ({ tasks, totalTasksCount, on
 					<table className="w-full min-w-max">
 						<thead className="bg-gray-50/70">
 							<tr>
-								<th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-12">{t("tasks.status")}</th>
 								<th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider min-w-0">{t("tasks.taskTitle")}</th>
 								<th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider min-w-0">{t("tasks.taskDescription")}</th>
 								<th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{t("tasks.category")}</th>
 								<th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{t("tasks.priority")}</th>
 								<th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{t("tasks.status")}</th>
 								<th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{t("tasks.tags")}</th>
+								<th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{t("tasks.recurrence")}</th>
 								<th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{t("tasks.startDate")}</th>
 								<th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{t("tasks.dueDate")}</th>
+								<th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{t("tasks.notes")}</th>
+								<th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">{t("tasks.createdAt")}</th>
 								<th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider w-16">{t("tasks.actions")}</th>
 							</tr>
 						</thead>
@@ -159,18 +168,6 @@ export const TaskTable: React.FC<TaskTableProps> = ({ tasks, totalTasksCount, on
 										index % 2 === 0 ? "bg-white/40" : "bg-gray-50/20"
 									}`}
 								>
-									{/* Status Toggle */}
-									<td className="px-6 py-4 whitespace-nowrap">
-										<button
-											onClick={() => onToggleTask(task.id)}
-											className={`h-5 w-5 rounded border-2 flex items-center justify-center transition-all duration-200 ${
-												task.status === 7 ? "bg-indigo-600 border-indigo-600 text-white shadow-sm" : "border-gray-300 hover:border-indigo-600 hover:bg-indigo-50"
-											}`}
-										>
-											{task.status === 7 && <CheckIcon className="h-3 w-3" />}
-										</button>
-									</td>
-
 									{/* Title */}
 									<td className="px-6 py-4">
 										<div className="max-w-xs">
@@ -216,18 +213,25 @@ export const TaskTable: React.FC<TaskTableProps> = ({ tasks, totalTasksCount, on
 
 									{/* Tags */}
 									<td className="px-6 py-4">
-										<div className="flex flex-wrap gap-1 max-w-xs">
+										<div className="flex flex-wrap gap-0.5 max-w-xs">
 											{task.tags.length > 0 ? (
-												task.tags.slice(0, 3).map((tag, tagIndex) => (
-													<span key={tagIndex} className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800">
+												task.tags.slice(0, 2).map((tag, tagIndex) => (
+													<span key={tagIndex} className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
 														{tag}
 													</span>
 												))
 											) : (
 												<span className="text-sm text-gray-400 italic">{t("tasks.noTags")}</span>
 											)}
-											{task.tags.length > 3 && <span className="text-xs text-gray-500">+{task.tags.length - 3}</span>}
+											{task.tags.length > 2 && <span className="text-xs text-gray-500 ml-1">+{task.tags.length - 2}</span>}
 										</div>
+									</td>
+
+									{/* Recurrence */}
+									<td className="px-6 py-4 whitespace-nowrap">
+										<span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200">
+											{t(`tasks.recurrence${task.recurrence.charAt(0).toUpperCase() + task.recurrence.slice(1)}`)}
+										</span>
 									</td>
 
 									{/* Start Date */}
@@ -243,6 +247,20 @@ export const TaskTable: React.FC<TaskTableProps> = ({ tasks, totalTasksCount, on
 											<span className="text-sm text-gray-400 italic">{t("tasks.noDueDate")}</span>
 										)}
 									</td>
+
+									{/* Notes */}
+									<td className="px-6 py-4">
+										<div className="max-w-xs">
+											{task.notes ? (
+												<p className="text-sm text-gray-600 line-clamp-2">{task.notes}</p>
+											) : (
+												<span className="text-sm text-gray-400 italic">{t("tasks.noNotes")}</span>
+											)}
+										</div>
+									</td>
+
+									{/* Created At */}
+									<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{formatDate(task.createdAt)}</td>
 
 									{/* Actions */}
 									<td className="px-6 py-4 whitespace-nowrap text-right">
