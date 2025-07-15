@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { XMarkIcon, EyeIcon, EyeSlashIcon, ArrowUpIcon, ArrowDownIcon, Cog6ToothIcon, ArrowUturnLeftIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon, EyeIcon, EyeSlashIcon, ArrowUpIcon, ArrowDownIcon, Cog6ToothIcon, ArrowUturnLeftIcon, ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { Bars3Icon } from "@heroicons/react/24/solid";
 import type { TableColumn } from "../../types/columns";
 
@@ -17,6 +17,7 @@ export const ColumnConfigModal: React.FC<ColumnConfigModalProps> = ({ isOpen, on
 	const { t } = useTranslation();
 	const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 	const [localColumns, setLocalColumns] = useState(columns);
+	const [showResetConfirmation, setShowResetConfirmation] = useState(false);
 
 	React.useEffect(() => {
 		// Filter out the actions column from the configurator
@@ -69,8 +70,17 @@ export const ColumnConfigModal: React.FC<ColumnConfigModalProps> = ({ isOpen, on
 	};
 
 	const handleReset = () => {
+		setShowResetConfirmation(true);
+	};
+
+	const confirmReset = () => {
 		onResetToDefault();
+		setShowResetConfirmation(false);
 		onClose();
+	};
+
+	const cancelReset = () => {
+		setShowResetConfirmation(false);
 	};
 
 	return (
@@ -164,6 +174,27 @@ export const ColumnConfigModal: React.FC<ColumnConfigModalProps> = ({ isOpen, on
 						</div>
 					</div>
 				</div>
+
+				{/* Popup de confirmation pour le reset */}
+				{showResetConfirmation && (
+					<div className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center">
+						<div className="bg-white rounded-lg shadow-xl p-6 max-w-sm mx-4">
+							<div className="flex items-center space-x-3 mb-4">
+								<ExclamationTriangleIcon className="h-6 w-6 text-amber-500" />
+								<h4 className="text-lg font-semibold text-gray-900">{t("common.confirmAction")}</h4>
+							</div>
+							<p className="text-sm text-gray-600 mb-6">{t("tasks.confirmResetColumns")}</p>
+							<div className="flex space-x-3 justify-end">
+								<button onClick={cancelReset} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+									{t("common.cancel")}
+								</button>
+								<button onClick={confirmReset} className="px-4 py-2 text-sm text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors">
+									{t("common.confirm")}
+								</button>
+							</div>
+						</div>
+					</div>
+				)}
 			</div>
 		</div>
 	);

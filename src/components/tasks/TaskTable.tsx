@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { XMarkIcon, Cog6ToothIcon, PencilIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon, Cog6ToothIcon, PencilIcon, ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import type { Task } from "../../types/task";
 import type { TableColumn } from "../../types/columns";
 import { getPriorityColor, getStatusColor, formatDate, isTaskOverdue } from "../../utils/taskUtils";
@@ -20,6 +20,26 @@ export const TaskTable: React.FC<TaskTableProps> = ({ tasks, totalTasksCount, on
 	const { columns, visibleColumns, toggleColumnVisibility, reorderColumns, resetToDefault } = useTableColumns();
 	const { getCategoryColor } = useCategories();
 	const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
+	const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+	const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
+
+	const handleDeleteClick = (task: Task) => {
+		setTaskToDelete(task);
+		setShowDeleteConfirmation(true);
+	};
+
+	const confirmDelete = () => {
+		if (taskToDelete) {
+			onDeleteTask(taskToDelete.id);
+			setTaskToDelete(null);
+			setShowDeleteConfirmation(false);
+		}
+	};
+
+	const cancelDelete = () => {
+		setTaskToDelete(null);
+		setShowDeleteConfirmation(false);
+	};
 
 	const getCategoryColorClass = (color: string) => {
 		const colorClasses = {
@@ -120,7 +140,7 @@ export const TaskTable: React.FC<TaskTableProps> = ({ tasks, totalTasksCount, on
 							</button>
 						)}
 						<button
-							onClick={() => onDeleteTask(task.id)}
+							onClick={() => handleDeleteClick(task)}
 							className="inline-flex items-center p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
 							title={t("tasks.deleteTask")}
 						>
@@ -202,7 +222,7 @@ export const TaskTable: React.FC<TaskTableProps> = ({ tasks, totalTasksCount, on
 										</button>
 									)}
 									<button
-										onClick={() => onDeleteTask(task.id)}
+										onClick={() => handleDeleteClick(task)}
 										className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
 										title={t("tasks.deleteTask")}
 									>
@@ -338,6 +358,33 @@ export const TaskTable: React.FC<TaskTableProps> = ({ tasks, totalTasksCount, on
 				onReorderColumns={reorderColumns}
 				onResetToDefault={resetToDefault}
 			/>
+
+			{/* Popup de confirmation pour la suppression */}
+			{showDeleteConfirmation && taskToDelete && (
+				<div className="fixed inset-0 z-50 overflow-y-auto">
+					<div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:p-0">
+						{/* Overlay */}
+						<div className="fixed inset-0 bg-black/50" onClick={cancelDelete} />
+
+						{/* Modal */}
+						<div className="relative bg-white rounded-lg shadow-xl p-6 max-w-sm mx-4">
+							<div className="flex items-center space-x-3 mb-4">
+								<ExclamationTriangleIcon className="h-6 w-6 text-red-500" />
+								<h4 className="text-lg font-semibold text-gray-900">{t("common.confirmAction")}</h4>
+							</div>
+							<p className="text-sm text-gray-600 mb-6">{t("tasks.confirmDeleteTask", { taskTitle: taskToDelete.title })}</p>
+							<div className="flex space-x-3 justify-end">
+								<button onClick={cancelDelete} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+									{t("common.cancel")}
+								</button>
+								<button onClick={confirmDelete} className="px-4 py-2 text-sm text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors">
+									{t("common.delete")}
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			)}
 		</div>
 	);
 };

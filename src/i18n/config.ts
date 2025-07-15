@@ -135,6 +135,8 @@ const resources = {
         hideColumn: "Hide column",
         showColumn: "Show column",
         resetToDefault: "Reset to default",
+        confirmResetColumns: "Are you sure you want to reset all columns to their default configuration? This action cannot be undone.",
+        confirmDeleteTask: "Are you sure you want to delete the task \"{{taskTitle}}\"? This action cannot be undone.",
         // Multi-level sorting
         multiLevelSort: "Multi-Level Sort",
         thenBy: "then by",
@@ -152,7 +154,9 @@ const resources = {
         close: "Close",
         add: "Add",
         edit: "Edit",
-        delete: "Delete"
+        delete: "Delete",
+        confirm: "Confirm",
+        confirmAction: "Confirm Action"
       },
       // Filters
       filters: {
@@ -311,6 +315,8 @@ const resources = {
         hideColumn: "Masquer la colonne",
         showColumn: "Afficher la colonne",
         resetToDefault: "Remettre par défaut",
+        confirmResetColumns: "Êtes-vous sûr de vouloir remettre toutes les colonnes à leur configuration par défaut ? Cette action ne peut pas être annulée.",
+        confirmDeleteTask: "Êtes-vous sûr de vouloir supprimer la tâche \"{{taskTitle}}\" ? Cette action ne peut pas être annulée.",
         // Tri multi-niveaux
         multiLevelSort: "Tri Multi-Niveaux",
         thenBy: "puis par",
@@ -328,7 +334,9 @@ const resources = {
         close: "Fermer",
         add: "Ajouter",
         edit: "Modifier",
-        delete: "Supprimer"
+        delete: "Supprimer",
+        confirm: "Confirmer",
+        confirmAction: "Confirmer l'action"
       },
       // Filters
       filters: {
