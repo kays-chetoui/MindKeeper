@@ -10,7 +10,19 @@ import type { Task } from "../types/task";
 
 const TasksPage: React.FC = () => {
 	const { t } = useTranslation();
-	const { tasks, newTask, setNewTask, isAddingTask, setIsAddingTask, addTask, deleteTask } = useTasks();
+	const { 
+		tasks, 
+		newTask, 
+		setNewTask, 
+		isAddingTask, 
+		setIsAddingTask, 
+		addTask, 
+		deleteTask,
+		editingTask,
+		updateTask,
+		startEditingTask,
+		cancelEditingTask
+	} = useTasks();
 	const [filteredTasks, setFilteredTasks] = useState<Task[]>(tasks);
 	const [sortedAndFilteredTasks, setSortedAndFilteredTasks] = useState<Task[]>(tasks);
 
@@ -61,10 +73,32 @@ const TasksPage: React.FC = () => {
 				<MultiLevelSort tasks={filteredTasks} onTasksChange={handleSortedTasksChange} />
 
 				{/* Add Task Form */}
-				{isAddingTask && <TaskForm newTask={newTask} setNewTask={setNewTask} onSubmit={addTask} onCancel={() => setIsAddingTask(false)} />}
+				{isAddingTask && (
+					<TaskForm 
+						newTask={newTask} 
+						setNewTask={setNewTask} 
+						onSubmit={addTask} 
+						onCancel={() => setIsAddingTask(false)} 
+					/>
+				)}
+
+				{/* Edit Task Form */}
+				{editingTask && (
+					<TaskForm 
+						editingTask={editingTask}
+						onSubmit={(task) => task && updateTask(task)} 
+						onCancel={cancelEditingTask}
+						isEditing={true}
+					/>
+				)}
 
 				{/* Tasks Table */}
-				<TaskTable tasks={sortedAndFilteredTasks} totalTasksCount={tasks.length} onDeleteTask={deleteTask} />
+				<TaskTable 
+					tasks={sortedAndFilteredTasks} 
+					totalTasksCount={tasks.length} 
+					onDeleteTask={deleteTask}
+					onEditTask={startEditingTask}
+				/>
 			</div>
 		</div>
 	);

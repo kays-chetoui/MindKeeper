@@ -78,6 +78,10 @@ const resources = {
         noDescription: "No description",
         noDueDate: "No due date",
         deleteTask: "Delete task",
+        editTask: "Edit task",
+        updateTask: "Update Task",
+        tagsPlaceholder: "Enter tags separated by commas",
+        notesPlaceholder: "Enter notes...",
         // Nouveaux champs
         category: "Category",
         tags: "Tags",
@@ -250,6 +254,10 @@ const resources = {
         noDescription: "Aucune description",
         noDueDate: "Pas d'échéance",
         deleteTask: "Supprimer la tâche",
+        editTask: "Modifier la tâche",
+        updateTask: "Mettre à jour la tâche",
+        tagsPlaceholder: "Saisir les étiquettes séparées par des virgules",
+        notesPlaceholder: "Saisir les notes...",
         // Nouveaux champs
         category: "Catégorie",
         tags: "Étiquettes",

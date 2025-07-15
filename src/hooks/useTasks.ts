@@ -190,6 +190,7 @@ export const useTasks = () => {
 	const [tasks, setTasks] = useState<Task[]>(initialTasks);
 	const [newTask, setNewTask] = useState<NewTask>(initialNewTask);
 	const [isAddingTask, setIsAddingTask] = useState(false);
+	const [editingTask, setEditingTask] = useState<Task | null>(null);
 
 	const addTask = () => {
 		if (newTask.title.trim()) {
@@ -213,6 +214,18 @@ export const useTasks = () => {
 		}
 	};
 
+	const updateTask = (updatedTask: Task) => {
+		setTasks(
+			tasks.map((task) => {
+				if (task.id === updatedTask.id) {
+					return updatedTask;
+				}
+				return task;
+			})
+		);
+		setEditingTask(null);
+	};
+
 	const toggleTask = (id: string) => {
 		setTasks(
 			tasks.map((task) => {
@@ -228,6 +241,15 @@ export const useTasks = () => {
 		setTasks(tasks.filter((task) => task.id !== id));
 	};
 
+	const startEditingTask = (task: Task) => {
+		setEditingTask(task);
+		setIsAddingTask(false); // Fermer le formulaire d'ajout si ouvert
+	};
+
+	const cancelEditingTask = () => {
+		setEditingTask(null);
+	};
+
 	return {
 		tasks,
 		newTask,
@@ -237,5 +259,9 @@ export const useTasks = () => {
 		addTask,
 		toggleTask,
 		deleteTask,
+		editingTask,
+		updateTask,
+		startEditingTask,
+		cancelEditingTask,
 	};
 };

@@ -1,21 +1,51 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Cog6ToothIcon } from "@heroicons/react/24/outline";
-import type { NewTask } from "../../types/task";
+import type { NewTask, Task } from "../../types/task";
 import { useCategories } from "../../hooks/useCategories";
 import { CategoryManagerModal } from "./CategoryManagerModal";
 
 interface TaskFormProps {
-	newTask: NewTask;
-	setNewTask: (task: NewTask) => void;
-	onSubmit: () => void;
+	newTask?: NewTask;
+	editingTask?: Task;
+	setNewTask?: (task: NewTask) => void;
+	onSubmit: (task?: Task) => void;
 	onCancel: () => void;
+	isEditing?: boolean;
 }
 
-export const TaskForm: React.FC<TaskFormProps> = ({ newTask, setNewTask, onSubmit, onCancel }) => {
+export const TaskForm: React.FC<TaskFormProps> = ({ 
+	newTask, 
+	editingTask, 
+	setNewTask, 
+	onSubmit, 
+	onCancel, 
+	isEditing = false 
+}) => {
 	const { t } = useTranslation();
 	const { categories, getCategoryColor } = useCategories();
 	const [isCategoryManagerOpen, setIsCategoryManagerOpen] = useState(false);
+
+	// État local pour l'édition
+	const [editFormData, setEditFormData] = useState<Task>(() => {
+		if (isEditing && editingTask) {
+			return { ...editingTask };
+		}
+		return {} as Task;
+	});
+
+	const formatDateForInput = (date?: Date) => {
+		if (!date) return "";
+		return date.toISOString().split('T')[0];
+	};
+
+	const handleSubmit = () => {
+		if (isEditing) {
+			onSubmit(editFormData);
+		} else {
+			onSubmit();
+		}
+	};
 
 	const getCategoryColorClass = (color: string) => {
 		const colorClasses = {
@@ -31,9 +61,29 @@ export const TaskForm: React.FC<TaskFormProps> = ({ newTask, setNewTask, onSubmi
 		return colorClasses[color as keyof typeof colorClasses] || colorClasses.gray;
 	};
 
+	// Obtenir les valeurs actuelles
+	const title = isEditing ? editFormData.title || "" : newTask?.title || "";
+	const description = isEditing ? editFormData.description || "" : newTask?.description || "";
+	const category = isEditing ? editFormData.category || "" : newTask?.category || "";
+	const priority = isEditing ? editFormData.priority || 3 : newTask?.priority || 3;
+	const status = isEditing ? editFormData.status || 1 : newTask?.status || 1;
+	const recurrence = isEditing ? editFormData.recurrence || "none" : newTask?.recurrence || "none";
+	const startDate = isEditing 
+		? formatDateForInput(editFormData.startDate) 
+		: newTask?.startDate || "";
+	const dueDate = isEditing 
+		? formatDateForInput(editFormData.dueDate) 
+		: newTask?.dueDate || "";
+	const tags = isEditing 
+		? (editFormData.tags || []).join(", ") 
+		: (newTask?.tags || []).join(", ");
+	const notes = isEditing ? editFormData.notes || "" : newTask?.notes || "";
+
 	return (
 		<div className="bg-white/80 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-gray-200/60 mb-8">
-			<h3 className="text-lg font-semibold text-gray-900 mb-6">{t("tasks.newTask")}</h3>
+			<h3 className="text-lg font-semibold text-gray-900 mb-6">
+				{isEditing ? t("tasks.editTask") : t("tasks.newTask")}
+			</h3>
 			<div className="space-y-6">
 				{/* Titre et Description */}
 				<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -41,8 +91,14 @@ export const TaskForm: React.FC<TaskFormProps> = ({ newTask, setNewTask, onSubmi
 						<label className="block text-sm font-medium text-gray-700 mb-2">{t("tasks.taskTitle")} *</label>
 						<input
 							type="text"
-							value={newTask.title}
-							onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+							value={title}
+							onChange={(e) => {
+								if (isEditing) {
+									setEditFormData(prev => ({ ...prev, title: e.target.value }));
+								} else if (setNewTask && newTask) {
+									setNewTask({ ...newTask, title: e.target.value });
+								}
+							}}
 							className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
 							placeholder={t("tasks.taskTitlePlaceholder")}
 						/>
@@ -61,21 +117,27 @@ export const TaskForm: React.FC<TaskFormProps> = ({ newTask, setNewTask, onSubmi
 							</button>
 						</div>
 						<select
-							value={newTask.category}
-							onChange={(e) => setNewTask({ ...newTask, category: e.target.value })}
+							value={category}
+							onChange={(e) => {
+								if (isEditing) {
+									setEditFormData(prev => ({ ...prev, category: e.target.value }));
+								} else if (setNewTask && newTask) {
+									setNewTask({ ...newTask, category: e.target.value });
+								}
+							}}
 							className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
 						>
 							<option value="">{t("tasks.selectCategory")}</option>
-							{categories.map((category) => (
-								<option key={category.id} value={category.name}>
-									{category.name}
+							{categories.map((cat) => (
+								<option key={cat.id} value={cat.name}>
+									{cat.name}
 								</option>
 							))}
 						</select>
-						{newTask.category && (
+						{category && (
 							<div className="mt-2">
-								<span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getCategoryColorClass(getCategoryColor(newTask.category))}`}>
-									{newTask.category}
+								<span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getCategoryColorClass(getCategoryColor(category))}`}>
+									{category}
 								</span>
 							</div>
 						)}
@@ -86,8 +148,14 @@ export const TaskForm: React.FC<TaskFormProps> = ({ newTask, setNewTask, onSubmi
 				<div>
 					<label className="block text-sm font-medium text-gray-700 mb-2">{t("tasks.taskDescription")}</label>
 					<textarea
-						value={newTask.description}
-						onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
+						value={description}
+						onChange={(e) => {
+							if (isEditing) {
+								setEditFormData(prev => ({ ...prev, description: e.target.value }));
+							} else if (setNewTask && newTask) {
+								setNewTask({ ...newTask, description: e.target.value });
+							}
+						}}
 						rows={3}
 						className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
 						placeholder={t("tasks.taskDescriptionPlaceholder")}
@@ -99,36 +167,57 @@ export const TaskForm: React.FC<TaskFormProps> = ({ newTask, setNewTask, onSubmi
 					<div>
 						<label className="block text-sm font-medium text-gray-700 mb-2">{t("tasks.priority")}</label>
 						<select
-							value={newTask.priority}
-							onChange={(e) => setNewTask({ ...newTask, priority: parseInt(e.target.value) as 1 | 2 | 3 | 4 | 5 })}
+							value={priority}
+							onChange={(e) => {
+								const newPriority = parseInt(e.target.value) as 1 | 2 | 3 | 4 | 5;
+								if (isEditing) {
+									setEditFormData(prev => ({ ...prev, priority: newPriority }));
+								} else if (setNewTask && newTask) {
+									setNewTask({ ...newTask, priority: newPriority });
+								}
+							}}
 							className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
 						>
-							<option value="1">{t("tasks.priority1")}</option>
-							<option value="2">{t("tasks.priority2")}</option>
-							<option value="3">{t("tasks.priority3")}</option>
-							<option value="4">{t("tasks.priority4")}</option>
-							<option value="5">{t("tasks.priority5")}</option>
+							<option value={1}>{t("tasks.priority1")}</option>
+							<option value={2}>{t("tasks.priority2")}</option>
+							<option value={3}>{t("tasks.priority3")}</option>
+							<option value={4}>{t("tasks.priority4")}</option>
+							<option value={5}>{t("tasks.priority5")}</option>
 						</select>
 					</div>
 					<div>
 						<label className="block text-sm font-medium text-gray-700 mb-2">{t("tasks.status")}</label>
 						<select
-							value={newTask.status}
-							onChange={(e) => setNewTask({ ...newTask, status: parseInt(e.target.value) as 1 | 2 | 3 | 7 | 8 })}
+							value={status}
+							onChange={(e) => {
+								const newStatus = parseInt(e.target.value) as 1 | 2 | 3 | 7 | 8;
+								if (isEditing) {
+									setEditFormData(prev => ({ ...prev, status: newStatus }));
+								} else if (setNewTask && newTask) {
+									setNewTask({ ...newTask, status: newStatus });
+								}
+							}}
 							className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
 						>
-							<option value="1">{t("tasks.status1")}</option>
-							<option value="2">{t("tasks.status2")}</option>
-							<option value="3">{t("tasks.status3")}</option>
-							<option value="7">{t("tasks.status7")}</option>
-							<option value="8">{t("tasks.status8")}</option>
+							<option value={1}>{t("tasks.status1")}</option>
+							<option value={2}>{t("tasks.status2")}</option>
+							<option value={3}>{t("tasks.status3")}</option>
+							<option value={7}>{t("tasks.status7")}</option>
+							<option value={8}>{t("tasks.status8")}</option>
 						</select>
 					</div>
 					<div>
 						<label className="block text-sm font-medium text-gray-700 mb-2">{t("tasks.recurrence")}</label>
 						<select
-							value={newTask.recurrence}
-							onChange={(e) => setNewTask({ ...newTask, recurrence: e.target.value as "none" | "daily" | "weekly" | "monthly" | "yearly" })}
+							value={recurrence}
+							onChange={(e) => {
+								const newRecurrence = e.target.value as "none" | "daily" | "weekly" | "monthly" | "yearly";
+								if (isEditing) {
+									setEditFormData(prev => ({ ...prev, recurrence: newRecurrence }));
+								} else if (setNewTask && newTask) {
+									setNewTask({ ...newTask, recurrence: newRecurrence });
+								}
+							}}
 							className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
 						>
 							<option value="none">{t("tasks.recurrenceNone")}</option>
@@ -146,8 +235,17 @@ export const TaskForm: React.FC<TaskFormProps> = ({ newTask, setNewTask, onSubmi
 						<label className="block text-sm font-medium text-gray-700 mb-2">{t("tasks.startDate")}</label>
 						<input
 							type="date"
-							value={newTask.startDate}
-							onChange={(e) => setNewTask({ ...newTask, startDate: e.target.value })}
+							value={startDate}
+							onChange={(e) => {
+								if (isEditing) {
+									setEditFormData(prev => ({ 
+										...prev, 
+										startDate: e.target.value ? new Date(e.target.value) : undefined 
+									}));
+								} else if (setNewTask && newTask) {
+									setNewTask({ ...newTask, startDate: e.target.value });
+								}
+							}}
 							className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
 						/>
 					</div>
@@ -155,8 +253,17 @@ export const TaskForm: React.FC<TaskFormProps> = ({ newTask, setNewTask, onSubmi
 						<label className="block text-sm font-medium text-gray-700 mb-2">{t("tasks.dueDate")}</label>
 						<input
 							type="date"
-							value={newTask.dueDate}
-							onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
+							value={dueDate}
+							onChange={(e) => {
+								if (isEditing) {
+									setEditFormData(prev => ({ 
+										...prev, 
+										dueDate: e.target.value ? new Date(e.target.value) : undefined 
+									}));
+								} else if (setNewTask && newTask) {
+									setNewTask({ ...newTask, dueDate: e.target.value });
+								}
+							}}
 							className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
 						/>
 					</div>
@@ -167,18 +274,17 @@ export const TaskForm: React.FC<TaskFormProps> = ({ newTask, setNewTask, onSubmi
 					<label className="block text-sm font-medium text-gray-700 mb-2">{t("tasks.tags")}</label>
 					<input
 						type="text"
-						value={newTask.tags.join(", ")}
-						onChange={(e) =>
-							setNewTask({
-								...newTask,
-								tags: e.target.value
-									.split(",")
-									.map((tag) => tag.trim())
-									.filter((tag) => tag !== ""),
-							})
-						}
+						value={tags}
+						onChange={(e) => {
+							const newTags = e.target.value.split(",").map(tag => tag.trim()).filter(tag => tag);
+							if (isEditing) {
+								setEditFormData(prev => ({ ...prev, tags: newTags }));
+							} else if (setNewTask && newTask) {
+								setNewTask({ ...newTask, tags: newTags });
+							}
+						}}
 						className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-						placeholder="urgent, important, client (séparés par des virgules)"
+						placeholder={t("tasks.tagsPlaceholder")}
 					/>
 				</div>
 
@@ -186,34 +292,43 @@ export const TaskForm: React.FC<TaskFormProps> = ({ newTask, setNewTask, onSubmi
 				<div>
 					<label className="block text-sm font-medium text-gray-700 mb-2">{t("tasks.notes")}</label>
 					<textarea
-						value={newTask.notes}
-						onChange={(e) => setNewTask({ ...newTask, notes: e.target.value })}
+						value={notes}
+						onChange={(e) => {
+							if (isEditing) {
+								setEditFormData(prev => ({ ...prev, notes: e.target.value }));
+							} else if (setNewTask && newTask) {
+								setNewTask({ ...newTask, notes: e.target.value });
+							}
+						}}
 						rows={3}
 						className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-						placeholder="Notes additionnelles, liens, références..."
+						placeholder={t("tasks.notesPlaceholder")}
 					/>
 				</div>
 
 				{/* Boutons d'action */}
-				<div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+				<div className="flex flex-col sm:flex-row gap-3 pt-4">
 					<button
-						onClick={onCancel}
-						className="px-6 py-3 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-200"
+						onClick={handleSubmit}
+						disabled={!title.trim()}
+						className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 hover:shadow-lg"
 					>
-						{t("tasks.cancel")}
+						{isEditing ? t("tasks.updateTask") : t("tasks.addTask")}
 					</button>
 					<button
-						onClick={onSubmit}
-						disabled={!newTask.title.trim()}
-						className="px-6 py-3 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-lg hover:shadow-xl transition-all duration-200 hover:-translate-y-0.5"
+						onClick={onCancel}
+						className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-3 px-6 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-all duration-200"
 					>
-						{t("tasks.add")}
+						{t("tasks.cancel")}
 					</button>
 				</div>
 			</div>
 
-			{/* Category Manager Modal */}
-			<CategoryManagerModal isOpen={isCategoryManagerOpen} onClose={() => setIsCategoryManagerOpen(false)} />
+			{/* Modal de gestion des catégories */}
+			<CategoryManagerModal 
+				isOpen={isCategoryManagerOpen} 
+				onClose={() => setIsCategoryManagerOpen(false)} 
+			/>
 		</div>
 	);
 };

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { XMarkIcon, Cog6ToothIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon, Cog6ToothIcon, PencilIcon } from "@heroicons/react/24/outline";
 import type { Task } from "../../types/task";
 import type { TableColumn } from "../../types/columns";
 import { getPriorityColor, getStatusColor, formatDate, isTaskOverdue } from "../../utils/taskUtils";
@@ -12,9 +12,10 @@ interface TaskTableProps {
 	tasks: Task[];
 	totalTasksCount: number;
 	onDeleteTask: (id: string) => void;
+	onEditTask?: (task: Task) => void;
 }
 
-export const TaskTable: React.FC<TaskTableProps> = ({ tasks, totalTasksCount, onDeleteTask }) => {
+export const TaskTable: React.FC<TaskTableProps> = ({ tasks, totalTasksCount, onDeleteTask, onEditTask }) => {
 	const { t } = useTranslation();
 	const { columns, visibleColumns, toggleColumnVisibility, reorderColumns, resetToDefault } = useTableColumns();
 	const { getCategoryColor } = useCategories();
@@ -108,13 +109,24 @@ export const TaskTable: React.FC<TaskTableProps> = ({ tasks, totalTasksCount, on
 
 			case "actions":
 				return (
-					<button
-						onClick={() => onDeleteTask(task.id)}
-						className="inline-flex items-center p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
-						title={t("tasks.deleteTask")}
-					>
-						<XMarkIcon className="h-4 w-4" />
-					</button>
+					<div className="flex items-center space-x-2">
+						{onEditTask && (
+							<button
+								onClick={() => onEditTask(task)}
+								className="inline-flex items-center p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200"
+								title={t("tasks.editTask")}
+							>
+								<PencilIcon className="h-4 w-4" />
+							</button>
+						)}
+						<button
+							onClick={() => onDeleteTask(task.id)}
+							className="inline-flex items-center p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
+							title={t("tasks.deleteTask")}
+						>
+							<XMarkIcon className="h-4 w-4" />
+						</button>
+					</div>
 				);
 
 			default:
@@ -179,13 +191,24 @@ export const TaskTable: React.FC<TaskTableProps> = ({ tasks, totalTasksCount, on
 								</div>
 
 								{/* Actions */}
-								<button
-									onClick={() => onDeleteTask(task.id)}
-									className="ml-2 p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 shrink-0"
-									title={t("tasks.deleteTask")}
-								>
-									<XMarkIcon className="h-4 w-4" />
-								</button>
+								<div className="flex items-center space-x-2 ml-2 shrink-0">
+									{onEditTask && (
+										<button
+											onClick={() => onEditTask(task)}
+											className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200"
+											title={t("tasks.editTask")}
+										>
+											<PencilIcon className="h-4 w-4" />
+										</button>
+									)}
+									<button
+										onClick={() => onDeleteTask(task.id)}
+										className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
+										title={t("tasks.deleteTask")}
+									>
+										<XMarkIcon className="h-4 w-4" />
+									</button>
+								</div>
 							</div>
 
 							{/* Métadonnées */}
