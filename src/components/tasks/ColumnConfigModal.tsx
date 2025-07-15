@@ -19,7 +19,9 @@ export const ColumnConfigModal: React.FC<ColumnConfigModalProps> = ({ isOpen, on
 	const [localColumns, setLocalColumns] = useState(columns);
 
 	React.useEffect(() => {
-		setLocalColumns([...columns].sort((a, b) => a.order - b.order));
+		// Filter out the actions column from the configurator
+		const filteredColumns = [...columns].filter((col) => col.id !== "actions").sort((a, b) => a.order - b.order);
+		setLocalColumns(filteredColumns);
 	}, [columns]);
 
 	if (!isOpen) return null;
@@ -58,7 +60,11 @@ export const ColumnConfigModal: React.FC<ColumnConfigModalProps> = ({ isOpen, on
 	};
 
 	const handleSave = () => {
-		onReorderColumns(localColumns);
+		// Add back the actions column with order 0 when saving
+		const actionsColumn = columns.find((col) => col.id === "actions");
+		const columnsWithActions = actionsColumn ? [{ ...actionsColumn, order: 0 }, ...localColumns.map((col, index) => ({ ...col, order: index + 1 }))] : localColumns;
+
+		onReorderColumns(columnsWithActions);
 		onClose();
 	};
 
@@ -99,8 +105,8 @@ export const ColumnConfigModal: React.FC<ColumnConfigModalProps> = ({ isOpen, on
 									onDragStart={(e) => handleDragStart(e, index)}
 									onDragOver={handleDragOver}
 									onDrop={(e) => handleDrop(e, index)}
-									className={`flex items-center justify-between p-3 bg-gray-50 rounded-lg border ${draggedIndex === index ? "opacity-50" : ""} ${
-										column.id === "actions" ? "opacity-75" : "hover:bg-gray-100"
+									className={`flex items-center justify-between p-3 bg-gray-50 rounded-lg border ${
+										draggedIndex === index ? "opacity-50" : "hover:bg-gray-100"
 									} cursor-move transition-colors`}
 								>
 									<div className="flex items-center space-x-3">
@@ -130,14 +136,7 @@ export const ColumnConfigModal: React.FC<ColumnConfigModalProps> = ({ isOpen, on
 										{/* Visibility toggle */}
 										<button
 											onClick={() => onToggleColumn(column.id)}
-											disabled={column.id === "actions"}
-											className={`p-1 transition-colors ${
-												column.id === "actions"
-													? "text-gray-300 cursor-not-allowed"
-													: column.visible
-													? "text-blue-600 hover:text-blue-800"
-													: "text-gray-400 hover:text-gray-600"
-											}`}
+											className={`p-1 transition-colors ${column.visible ? "text-blue-600 hover:text-blue-800" : "text-gray-400 hover:text-gray-600"}`}
 											title={column.visible ? t("tasks.hideColumn") : t("tasks.showColumn")}
 										>
 											{column.visible ? <EyeIcon className="h-4 w-4" /> : <EyeSlashIcon className="h-4 w-4" />}

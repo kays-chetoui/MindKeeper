@@ -19,7 +19,17 @@ export const useTableColumns = () => {
 				const newColumns = defaultColumns.filter(
 					defaultCol => !config.columns.some(col => col.id === defaultCol.id)
 				);
-				return [...mergedColumns, ...newColumns].sort((a, b) => a.order - b.order);
+				
+				const allColumns = [...mergedColumns, ...newColumns];
+				
+				// Ensure actions column is always first
+				const actionsColumn = allColumns.find(col => col.id === 'actions');
+				const otherColumns = allColumns.filter(col => col.id !== 'actions').sort((a, b) => a.order - b.order);
+				
+				return [
+					actionsColumn ? { ...actionsColumn, order: 0 } : { id: 'actions', key: 'actions' as const, labelKey: 'tasks.actions', visible: true, order: 0, sortable: false },
+					...otherColumns.map((col, index) => ({ ...col, order: index + 1 }))
+				];
 			}
 		} catch (error) {
 			console.error('Error loading column configuration:', error);
@@ -45,10 +55,17 @@ export const useTableColumns = () => {
 	};
 
 	const reorderColumns = (newColumns: TableColumn[]) => {
-		const reorderedColumns = newColumns.map((col, index) => ({
-			...col,
-			order: index
-		}));
+		// Ensure actions column is always first and cannot be moved
+		const actionsColumn = newColumns.find(col => col.id === 'actions');
+		const otherColumns = newColumns.filter(col => col.id !== 'actions');
+		
+		const reorderedColumns: TableColumn[] = [
+			actionsColumn ? { ...actionsColumn, order: 0 } : { id: 'actions', key: 'actions' as const, labelKey: 'tasks.actions', visible: true, order: 0, sortable: false },
+			...otherColumns.map((col, index) => ({
+				...col,
+				order: index + 1
+			}))
+		];
 		saveColumns(reorderedColumns);
 	};
 
