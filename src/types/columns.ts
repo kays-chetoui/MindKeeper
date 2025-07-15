@@ -19,6 +19,7 @@ export type ColumnId =
 	| 'startDate'
 	| 'dueDate'
 	| 'notes'
+	| 'active'
 	| 'createdAt'
 	| 'actions';
 
@@ -37,6 +38,7 @@ export const defaultColumns: TableColumn[] = [
 	{ id: 'recurrence', key: 'recurrence', labelKey: 'tasks.recurrence', visible: true, order: 7, sortable: true },
 	{ id: 'startDate', key: 'startDate', labelKey: 'tasks.startDate', visible: true, order: 8, sortable: true },
 	{ id: 'dueDate', key: 'dueDate', labelKey: 'tasks.dueDate', visible: true, order: 9, sortable: true },
-	{ id: 'notes', key: 'notes', labelKey: 'tasks.notes', visible: false, order: 10, sortable: false },
-	{ id: 'createdAt', key: 'createdAt', labelKey: 'tasks.createdAt', visible: false, order: 11, sortable: true },
+	{ id: 'active', key: 'active', labelKey: 'tasks.active', visible: false, order: 10, sortable: true },
+	{ id: 'notes', key: 'notes', labelKey: 'tasks.notes', visible: false, order: 11, sortable: false },
+	{ id: 'createdAt', key: 'createdAt', labelKey: 'tasks.createdAt', visible: false, order: 12, sortable: true },
 ];

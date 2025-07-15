@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { useTasks } from "../hooks/useTasks";
@@ -13,6 +13,7 @@ const TasksPage: React.FC = () => {
 	const { tasks, newTask, setNewTask, isAddingTask, setIsAddingTask, addTask, deleteTask, editingTask, updateTask, startEditingTask, cancelEditingTask } = useTasks();
 	const [filteredTasks, setFilteredTasks] = useState<Task[]>(tasks);
 	const [sortedAndFilteredTasks, setSortedAndFilteredTasks] = useState<Task[]>(tasks);
+	const editFormRef = useRef<HTMLDivElement>(null);
 
 	// Gérer les tâches filtrées par les filtres avancés
 	const handleFilteredTasksChange = (filtered: Task[]) => {
@@ -25,9 +26,19 @@ const TasksPage: React.FC = () => {
 	};
 
 	// Mettre à jour filteredTasks quand les tâches changent
-	React.useEffect(() => {
+	useEffect(() => {
 		setFilteredTasks(tasks);
 	}, [tasks]);
+
+	// Faire défiler vers le formulaire d'édition quand il s'ouvre
+	useEffect(() => {
+		if (editingTask && editFormRef.current) {
+			editFormRef.current.scrollIntoView({
+				behavior: "smooth",
+				block: "start",
+			});
+		}
+	}, [editingTask]);
 
 	return (
 		<div className="min-h-screen">
@@ -63,7 +74,7 @@ const TasksPage: React.FC = () => {
 
 				{/* Edit Task Form */}
 				{editingTask && (
-					<div className="mb-8">
+					<div ref={editFormRef} className="mb-8">
 						<TaskForm editingTask={editingTask} onSubmit={(task) => task && updateTask(task)} onCancel={cancelEditingTask} isEditing={true} />
 					</div>
 				)}

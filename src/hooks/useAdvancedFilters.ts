@@ -17,7 +17,15 @@ export const useAdvancedFilters = (tasks: Task[]) => {
   const { categories } = useCategories();
   
   const [advancedFilter, setAdvancedFilter] = useState<AdvancedFilter>({
-    conditions: [],
+    conditions: [
+      {
+        id: 'default-active-filter',
+        field: 'active',
+        operator: 'equals',
+        value: 'true',
+        logicalOperator: 'and',
+      }
+    ],
     enabled: true, // Toujours activé maintenant
   });
 
@@ -100,7 +108,17 @@ export const useAdvancedFilters = (tasks: Task[]) => {
       field: 'notes',
       label: t('tasks.notes'),
       type: 'text',
-      supportedOperators: ['equals', 'notEquals', 'contains', 'notContains', 'startsWith', 'endsWith', 'isEmpty', 'isNotEmpty'],
+      supportedOperators: ['contains', 'notContains', 'equals', 'notEquals', 'isEmpty', 'isNotEmpty'],
+    },
+    {
+      field: 'active',
+      label: t('tasks.active'),
+      type: 'select',
+      options: [
+        { value: 'true', label: t('common.yes') },
+        { value: 'false', label: t('common.no') },
+      ],
+      supportedOperators: ['equals', 'notEquals'],
     },
   ], [t, categories]);
 
@@ -166,6 +184,21 @@ export const useAdvancedFilters = (tasks: Task[]) => {
     }));
   };
 
+  const restoreDefaultFilter = () => {
+    setAdvancedFilter(prev => ({
+      ...prev,
+      conditions: [
+        {
+          id: 'default-active-filter',
+          field: 'active',
+          operator: 'equals',
+          value: 'true',
+          logicalOperator: 'and',
+        }
+      ],
+    }));
+  };
+
   const getFieldConfig = (field: FilterField): FilterFieldConfig | undefined => {
     return filterFieldConfigs.find(config => config.field === field);
   };
@@ -185,6 +218,7 @@ export const useAdvancedFilters = (tasks: Task[]) => {
     updateCondition,
     removeCondition,
     clearAllConditions,
+    restoreDefaultFilter,
     getFieldConfig,
     filteredTasks,
   };

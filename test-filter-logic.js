@@ -1,9 +1,8 @@
 // Test rapide de la logique de filtrage
-import { applyAdvancedFilter, FilterCondition, AdvancedFilter } from "../src/types/advancedFilter";
-import type { Task } from "../src/types/task";
+import { applyAdvancedFilter } from "../src/types/advancedFilter.js";
 
 // Tâches d'exemple
-const testTasks: Task[] = [
+const testTasks = [
 	{
 		id: "1",
 		title: "Tâche 1",
@@ -14,6 +13,7 @@ const testTasks: Task[] = [
 		status: 1,
 		recurrence: "none",
 		notes: "",
+		active: true,
 		createdAt: new Date(),
 	},
 	{
@@ -26,12 +26,13 @@ const testTasks: Task[] = [
 		status: 2,
 		recurrence: "none",
 		notes: "",
+		active: false,
 		createdAt: new Date(),
 	},
 ];
 
 // Test 1: Aucune condition - doit retourner toutes les tâches
-const noConditionsFilter: AdvancedFilter = {
+const noConditionsFilter = {
 	conditions: [],
 	enabled: true,
 };
@@ -40,14 +41,14 @@ const result1 = applyAdvancedFilter(testTasks, noConditionsFilter);
 console.log("Test 1 - Aucune condition:", result1.length, "tâches (attendu: 2)");
 
 // Test 2: Condition qui ne correspond à rien - doit retourner liste vide
-const noMatchCondition: FilterCondition = {
+const noMatchCondition = {
 	id: "1",
 	field: "title",
 	operator: "equals",
 	value: "Tâche inexistante",
 };
 
-const noMatchFilter: AdvancedFilter = {
+const noMatchFilter = {
 	conditions: [noMatchCondition],
 	enabled: true,
 };
@@ -56,14 +57,14 @@ const result2 = applyAdvancedFilter(testTasks, noMatchFilter);
 console.log("Test 2 - Aucune correspondance:", result2.length, "tâches (attendu: 0)");
 
 // Test 3: Condition qui correspond - doit retourner les tâches correspondantes
-const matchCondition: FilterCondition = {
+const matchCondition = {
 	id: "2",
 	field: "category",
 	operator: "equals",
 	value: "Travail",
 };
 
-const matchFilter: AdvancedFilter = {
+const matchFilter = {
 	conditions: [matchCondition],
 	enabled: true,
 };

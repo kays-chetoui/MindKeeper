@@ -88,6 +88,8 @@ const resources = {
         startDate: "Start Date",
         recurrence: "Recurrence",
         notes: "Notes",
+        active: "Active",
+        activeDescription: "Mark this task as active or inactive",
         noCategory: "No category",
         noTags: "No tags",
         noStartDate: "No start date",
@@ -114,6 +116,8 @@ const resources = {
         enterTagsCommaSeparated: "Enter tags separated by commas",
         noConditionsYet: "No conditions yet",
         addConditionToStart: "Add a condition to start filtering",
+        defaultFilter: "Default filter",
+        restoreDefaultFilter: "Restore default filter",
         // Statuts numériques (1=nouveau, 2=en cours, 3=en attente, 7=fermé, 8=annulé)
         status1: "New",
         status2: "In Progress",
@@ -156,7 +160,10 @@ const resources = {
         edit: "Edit",
         delete: "Delete",
         confirm: "Confirm",
-        confirmAction: "Confirm Action"
+        confirmAction: "Confirm Action",
+        yes: "Yes",
+        no: "No",
+        default: "Default"
       },
       // Filters
       filters: {
@@ -268,6 +275,8 @@ const resources = {
         startDate: "Date de début",
         recurrence: "Récurrence",
         notes: "Notes",
+        active: "Actif",
+        activeDescription: "Marquer cette tâche comme active ou inactive",
         noCategory: "Aucune catégorie",
         noTags: "Aucune étiquette",
         noStartDate: "Pas de date de début",
@@ -294,6 +303,8 @@ const resources = {
         enterTagsCommaSeparated: "Saisir les étiquettes séparées par des virgules",
         noConditionsYet: "Aucune condition pour le moment",
         addConditionToStart: "Ajoutez une condition pour commencer le filtrage",
+        defaultFilter: "Filtre par défaut",
+        restoreDefaultFilter: "Rétablir le filtre par défaut",
         // Statuts numériques (1=nouveau, 2=en cours, 3=en attente, 7=fermé, 8=annulé)
         status1: "Nouveau",
         status2: "En cours",
@@ -336,7 +347,10 @@ const resources = {
         edit: "Modifier",
         delete: "Supprimer",
         confirm: "Confirmer",
-        confirmAction: "Confirmer l'action"
+        confirmAction: "Confirmer l'action",
+        yes: "Oui",
+        no: "Non",
+        default: "Par défaut"
       },
       // Filters
       filters: {

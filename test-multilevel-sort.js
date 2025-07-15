@@ -16,6 +16,7 @@ const testTasks = [
 		tags: [],
 		recurrence: "none",
 		notes: "",
+		active: true,
 	},
 	{
 		id: "2",
@@ -30,6 +31,7 @@ const testTasks = [
 		tags: [],
 		recurrence: "none",
 		notes: "",
+		active: true,
 	},
 	{
 		id: "3",
@@ -44,6 +46,7 @@ const testTasks = [
 		tags: [],
 		recurrence: "none",
 		notes: "",
+		active: false,
 	},
 	{
 		id: "4",
@@ -58,6 +61,7 @@ const testTasks = [
 		tags: [],
 		recurrence: "none",
 		notes: "",
+		active: true,
 	},
 ];
 

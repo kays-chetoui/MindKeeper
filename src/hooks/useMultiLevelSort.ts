@@ -51,6 +51,11 @@ export const useMultiLevelSort = (tasks: Task[]) => {
       type: 'date',
     },
     {
+      field: 'active',
+      label: t('tasks.active'),
+      type: 'boolean',
+    },
+    {
       field: 'createdAt',
       label: t('tasks.createdAt'),
       type: 'date',

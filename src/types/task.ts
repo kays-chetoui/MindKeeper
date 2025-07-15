@@ -10,6 +10,7 @@ export interface Task {
 	dueDate?: Date;
 	startDate?: Date;
 	notes: string;
+	active: boolean; // Indique si la tâche est active ou non
 	createdAt: Date;
 }
 
@@ -33,4 +34,5 @@ export interface NewTask {
 	dueDate: string;
 	startDate: string;
 	notes: string;
+	active: boolean;
 }

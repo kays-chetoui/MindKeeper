@@ -10,7 +10,8 @@ export type FilterField =
   | 'dueDate'
   | 'startDate'
   | 'createdAt'
-  | 'notes';
+  | 'notes'
+  | 'active';
 
 export type FilterOperator = 
   | 'equals'
@@ -34,7 +35,7 @@ export interface FilterCondition {
   id: string;
   field: FilterField;
   operator: FilterOperator;
-  value: string | string[] | number | Date | null;
+  value: string | string[] | number | Date | boolean | null;
   logicalOperator?: LogicalOperator; // For combining with next condition
 }
 
@@ -53,7 +54,7 @@ export interface FilterFieldConfig {
 }
 
 // Utility functions for filtering
-export const getFieldValue = (task: Task, field: FilterField): string | number | Date | string[] | undefined => {
+export const getFieldValue = (task: Task, field: FilterField): string | number | Date | string[] | boolean | undefined => {
   switch (field) {
     case 'title':
       return task.title;
@@ -75,6 +76,8 @@ export const getFieldValue = (task: Task, field: FilterField): string | number |
       return task.createdAt;
     case 'notes':
       return task.notes;
+    case 'active':
+      return task.active;
     default:
       return undefined;
   }
@@ -98,6 +101,10 @@ export const evaluateCondition = (task: Task, condition: FilterCondition): boole
       if (fieldValue instanceof Date && value instanceof Date) {
         return fieldValue.getTime() === value.getTime();
       }
+      // Gestion spéciale pour les valeurs booléennes
+      if (typeof fieldValue === 'boolean' && typeof value === 'string') {
+        return fieldValue.toString() === value;
+      }
       return fieldValue === value;
 
     case 'notEquals':
@@ -108,6 +115,10 @@ export const evaluateCondition = (task: Task, condition: FilterCondition): boole
       }
       if (fieldValue instanceof Date && value instanceof Date) {
         return fieldValue.getTime() !== value.getTime();
+      }
+      // Gestion spéciale pour les valeurs booléennes
+      if (typeof fieldValue === 'boolean' && typeof value === 'string') {
+        return fieldValue.toString() !== value;
       }
       return fieldValue !== value;
 

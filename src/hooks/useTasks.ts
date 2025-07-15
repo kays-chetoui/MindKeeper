@@ -15,6 +15,7 @@ const initialTasks: Task[] = [
 		dueDate: new Date("2025-01-15"),
 		startDate: new Date("2025-01-05"),
 		notes: "Important pour la réunion du conseil d'administration",
+		active: true,
 		createdAt: new Date("2025-01-05"),
 	},
 	{
@@ -29,6 +30,7 @@ const initialTasks: Task[] = [
 		dueDate: new Date("2025-01-10"),
 		startDate: new Date("2025-01-03"),
 		notes: "Préparer l'ordre du jour avant la réunion",
+		active: false, // Fermée donc inactive
 		createdAt: new Date("2025-01-03"),
 	},
 	{
@@ -43,6 +45,7 @@ const initialTasks: Task[] = [
 		dueDate: new Date("2025-01-20"),
 		startDate: new Date("2025-01-02"),
 		notes: "Consulter les rapports financiers du Q4 2024",
+		active: true,
 		createdAt: new Date("2025-01-02"),
 	},
 	{
@@ -57,6 +60,7 @@ const initialTasks: Task[] = [
 		dueDate: new Date("2025-02-01"),
 		startDate: new Date("2025-01-15"),
 		notes: "Certificat requis pour le renouvellement des accès",
+		active: true,
 		createdAt: new Date("2025-01-08"),
 	},
 	{
@@ -71,6 +75,7 @@ const initialTasks: Task[] = [
 		dueDate: new Date("2025-01-18"),
 		startDate: new Date("2025-01-10"),
 		notes: "Utiliser FastAPI avec authentification JWT",
+		active: true,
 		createdAt: new Date("2025-01-10"),
 	},
 	{
@@ -85,6 +90,7 @@ const initialTasks: Task[] = [
 		dueDate: new Date("2025-03-01"),
 		startDate: new Date("2025-01-20"),
 		notes: "Attendre les promotions de février avant de réserver",
+		active: false, // En pause donc inactive
 		createdAt: new Date("2025-01-07"),
 	},
 	{
@@ -99,6 +105,7 @@ const initialTasks: Task[] = [
 		dueDate: new Date("2025-01-12"),
 		startDate: new Date("2025-01-01"),
 		notes: "Inclure les nouvelles fonctionnalités du sprint 12",
+		active: false, // Fermée donc inactive
 		createdAt: new Date("2025-01-01"),
 	},
 	{
@@ -113,6 +120,7 @@ const initialTasks: Task[] = [
 		dueDate: new Date("2025-01-25"),
 		startDate: undefined,
 		notes: "RDV chez le concessionnaire, penser aux papiers",
+		active: true,
 		createdAt: new Date("2025-01-06"),
 	},
 	{
@@ -127,6 +135,7 @@ const initialTasks: Task[] = [
 		dueDate: new Date("2025-01-22"),
 		startDate: new Date("2025-01-12"),
 		notes: "Utiliser EXPLAIN ANALYZE pour identifier les goulots",
+		active: true,
 		createdAt: new Date("2025-01-12"),
 	},
 	{
@@ -141,6 +150,7 @@ const initialTasks: Task[] = [
 		dueDate: new Date("2025-01-16"),
 		startDate: new Date("2025-01-14"),
 		notes: "Attendre validation des fonctionnalités par l'équipe produit",
+		active: false, // En pause donc inactive
 		createdAt: new Date("2025-01-14"),
 	},
 	{
@@ -155,6 +165,7 @@ const initialTasks: Task[] = [
 		dueDate: undefined,
 		startDate: new Date("2025-01-01"),
 		notes: "Objectif : maintenir la régularité pendant 3 mois",
+		active: true,
 		createdAt: new Date("2025-01-01"),
 	},
 	{
@@ -169,6 +180,7 @@ const initialTasks: Task[] = [
 		dueDate: new Date("2025-01-11"),
 		startDate: new Date("2025-01-09"),
 		notes: "Reporté suite à la migration cloud prévue",
+		active: false, // Annulée donc inactive
 		createdAt: new Date("2025-01-09"),
 	},
 ];
@@ -184,6 +196,7 @@ const initialNewTask: NewTask = {
 	dueDate: "",
 	startDate: "",
 	notes: "",
+	active: true, // Par défaut, une nouvelle tâche est active
 };
 
 export const useTasks = () => {
@@ -206,6 +219,7 @@ export const useTasks = () => {
 				dueDate: newTask.dueDate ? new Date(newTask.dueDate) : undefined,
 				startDate: newTask.startDate ? new Date(newTask.startDate) : undefined,
 				notes: newTask.notes.trim(),
+				active: newTask.active,
 				createdAt: new Date(),
 			};
 			setTasks([...tasks, task]);

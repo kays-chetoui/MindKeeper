@@ -127,6 +127,17 @@ export const TaskTable: React.FC<TaskTableProps> = ({ tasks, totalTasksCount, on
 			case "createdAt":
 				return <span className="text-sm text-gray-600">{formatDate(task.createdAt)}</span>;
 
+			case "active":
+				return (
+					<span
+						className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${
+							task.active ? "bg-green-100 text-green-800 border-green-200" : "bg-gray-100 text-gray-800 border-gray-200"
+						}`}
+					>
+						{task.active ? t("common.yes") : t("common.no")}
+					</span>
+				);
+
 			case "actions":
 				return (
 					<div className="flex items-center space-x-2">
@@ -264,10 +275,18 @@ export const TaskTable: React.FC<TaskTableProps> = ({ tasks, totalTasksCount, on
 									</div>
 								)}
 
-								{/* Ligne 4: Recurrence */}
-								<div>
+								{/* Ligne 4: Recurrence et Active */}
+								<div className="flex flex-wrap gap-2">
 									<span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200">
 										{t(`tasks.recurrence${task.recurrence.charAt(0).toUpperCase() + task.recurrence.slice(1)}`)}
+									</span>
+									<span
+										className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${
+											task.active ? "bg-green-100 text-green-800 border-green-200" : "bg-gray-100 text-gray-800 border-gray-200"
+										}`}
+										title={t("tasks.active")}
+									>
+										{t("tasks.active")}: {task.active ? t("common.yes") : t("common.no")}
 									</span>
 								</div>
 

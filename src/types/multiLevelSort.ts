@@ -7,6 +7,7 @@ export type SortField =
   | 'category'
   | 'dueDate'
   | 'startDate'
+  | 'active'
   | 'createdAt';
 
 export type SortDirection = 'asc' | 'desc';
@@ -27,11 +28,11 @@ export interface MultiLevelSort {
 export interface SortFieldConfig {
   field: SortField;
   label: string;
-  type: 'text' | 'number' | 'date';
+  type: 'text' | 'number' | 'date' | 'boolean';
 }
 
 // Fonction utilitaire pour comparer deux valeurs selon leur type
-export const compareValues = (a: string | number | Date | null | undefined, b: string | number | Date | null | undefined, type: 'text' | 'number' | 'date'): number => {
+export const compareValues = (a: string | number | Date | boolean | null | undefined, b: string | number | Date | boolean | null | undefined, type: 'text' | 'number' | 'date' | 'boolean'): number => {
   // Gérer les valeurs nulles ou undefined
   if (a === null || a === undefined) {
     if (b === null || b === undefined) return 0;
@@ -51,6 +52,12 @@ export const compareValues = (a: string | number | Date | null | undefined, b: s
       if (isNaN(numA)) return 1;
       if (isNaN(numB)) return -1;
       return numA - numB;
+    }
+    case 'boolean': {
+      // Convertir les booléens en nombres pour la comparaison (true = 1, false = 0)
+      const boolA = a ? 1 : 0;
+      const boolB = b ? 1 : 0;
+      return boolA - boolB;
     }
     case 'date': {
       let dateA: Date, dateB: Date;
@@ -80,7 +87,7 @@ export const compareValues = (a: string | number | Date | null | undefined, b: s
 };
 
 // Fonction pour obtenir la valeur d'un champ d'une tâche
-export const getTaskFieldValue = (task: Task, field: SortField): string | number | Date | undefined => {
+export const getTaskFieldValue = (task: Task, field: SortField): string | number | Date | boolean | undefined => {
   switch (field) {
     case 'title':
       return task.title;
@@ -94,6 +101,8 @@ export const getTaskFieldValue = (task: Task, field: SortField): string | number
       return task.dueDate;
     case 'startDate':
       return task.startDate;
+    case 'active':
+      return task.active;
     case 'createdAt':
       return task.createdAt;
     default:
