@@ -303,19 +303,34 @@ export const TaskTable: React.FC<TaskTableProps> = ({ tasks, totalTasksCount, on
 			</div>
 
 			{/* Vue en tableau pour desktop */}
-			<div className="hidden lg:block">
+			<div className="hidden lg:block relative">
+				{/* Table unifiée avec colonne actions intégrée */}
 				<div className="overflow-x-auto">
-					<table className="w-full min-w-max">
+					<table className="w-full min-w-max table-fixed">
+						<colgroup>
+							{visibleColumns
+								.filter((col) => col.id !== "actions")
+								.map((column) => (
+									<col key={column.id} className="w-auto" />
+								))}
+							{visibleColumns.some((col) => col.id === "actions") && <col className="w-28" />}
+						</colgroup>
 						<thead className="bg-gray-50/70">
 							<tr>
-								{visibleColumns.map((column) => (
-									<th
-										key={column.id}
-										className={`px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider ${column.id === "actions" ? "text-right w-16" : "min-w-0"}`}
-									>
-										{t(column.labelKey)}
+								{visibleColumns
+									.filter((col) => col.id !== "actions")
+									.map((column) => (
+										<th key={column.id} className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+											{t(column.labelKey)}
+										</th>
+									))}
+								{visibleColumns.some((col) => col.id === "actions") && (
+									<th className="w-28 px-4 py-4 text-center text-xs font-medium text-gray-500 uppercase tracking-wide bg-transparent backdrop-blur-sm border-l border-gray-200/40 sticky right-0 z-10">
+										<span className="inline-flex items-center justify-center">
+											<Cog6ToothIcon className="h-3.5 w-3.5 text-gray-400" />
+										</span>
 									</th>
-								))}
+								)}
 							</tr>
 						</thead>
 						<tbody className="divide-y divide-gray-200/60">
@@ -326,22 +341,48 @@ export const TaskTable: React.FC<TaskTableProps> = ({ tasks, totalTasksCount, on
 										index % 2 === 0 ? "bg-white/40" : "bg-gray-50/20"
 									}`}
 								>
-									{visibleColumns.map((column) => (
+									{visibleColumns
+										.filter((col) => col.id !== "actions")
+										.map((column) => (
+											<td
+												key={column.id}
+												className={`px-6 py-4 ${
+													column.id === "startDate" || column.id === "dueDate" || column.id === "createdAt"
+														? "whitespace-nowrap"
+														: column.id === "category" || column.id === "priority" || column.id === "status" || column.id === "recurrence"
+														? "whitespace-nowrap"
+														: ""
+												}`}
+											>
+												{renderCell(task, column)}
+											</td>
+										))}
+									{visibleColumns.some((col) => col.id === "actions") && (
 										<td
-											key={column.id}
-											className={`px-6 py-4 ${
-												column.id === "actions"
-													? "text-right"
-													: column.id === "startDate" || column.id === "dueDate" || column.id === "createdAt"
-													? "whitespace-nowrap"
-													: column.id === "category" || column.id === "priority" || column.id === "status" || column.id === "recurrence"
-													? "whitespace-nowrap"
-													: ""
-											}`}
+											className={`w-28 px-3 py-4 text-center bg-transparent backdrop-blur-md border-l border-gray-200/40 sticky right-0 z-10 shadow-[-8px_0_20px_-8px_rgba(0,0,0,0.15)] transition-all duration-300 group ${
+												task.status === 7 ? "opacity-60" : ""
+											} ${index % 2 === 0 ? "bg-white/50" : "bg-gray-50/30"} hover:bg-white/60`}
 										>
-											{renderCell(task, column)}
+											<div className="flex items-center space-x-1 justify-center opacity-80 group-hover:opacity-100 transition-opacity duration-200">
+												{onEditTask && (
+													<button
+														onClick={() => onEditTask(task)}
+														className="inline-flex items-center justify-center w-8 h-8 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50/80 rounded-full transition-all duration-200 hover:shadow-sm hover:scale-105"
+														title={t("tasks.editTask")}
+													>
+														<PencilIcon className="h-4 w-4" />
+													</button>
+												)}
+												<button
+													onClick={() => handleDeleteClick(task)}
+													className="inline-flex items-center justify-center w-8 h-8 text-gray-400 hover:text-red-500 hover:bg-red-50/80 rounded-full transition-all duration-200 hover:shadow-sm hover:scale-105"
+													title={t("tasks.deleteTask")}
+												>
+													<XMarkIcon className="h-4 w-4" />
+												</button>
+											</div>
 										</td>
-									))}
+									)}
 								</tr>
 							))}
 						</tbody>
