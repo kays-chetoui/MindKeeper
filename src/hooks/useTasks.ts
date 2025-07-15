@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import type { Task, NewTask, FilterStatus, FilterPriority, SortBy, SortOrder } from "../types/task";
+import { useState } from "react";
+import type { Task, NewTask } from "../types/task";
 import { getNextStatus } from "../utils/taskUtils";
 
 const initialTasks: Task[] = [
@@ -191,13 +191,6 @@ export const useTasks = () => {
 	const [newTask, setNewTask] = useState<NewTask>(initialNewTask);
 	const [isAddingTask, setIsAddingTask] = useState(false);
 
-	// Filtres et tri
-	const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
-	const [filterPriority, setFilterPriority] = useState<FilterPriority>("all");
-	const [filterCategory, setFilterCategory] = useState<string>("all");
-	const [sortBy, setSortBy] = useState<SortBy>("dueDate");
-	const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
-
 	const addTask = () => {
 		if (newTask.title.trim()) {
 			const task: Task = {
@@ -235,77 +228,12 @@ export const useTasks = () => {
 		setTasks(tasks.filter((task) => task.id !== id));
 	};
 
-	// Logique de filtrage et tri
-	const filteredAndSortedTasks = useMemo(() => {
-		let filtered = tasks;
-
-		// Filtrage par statut
-		if (filterStatus !== "all") {
-			filtered = filtered.filter((task) => task.status === filterStatus);
-		}
-
-		// Filtrage par priorité
-		if (filterPriority !== "all") {
-			filtered = filtered.filter((task) => task.priority === filterPriority);
-		}
-
-		// Filtrage par catégorie
-		if (filterCategory !== "all") {
-			filtered = filtered.filter((task) => task.category === filterCategory);
-		}
-
-		// Tri
-		const sorted = [...filtered].sort((a, b) => {
-			let comparison = 0;
-
-			switch (sortBy) {
-				case "title":
-					comparison = a.title.localeCompare(b.title);
-					break;
-				case "priority": {
-					// Priorités : 1 (critique) > 2 (haute) > 3 (modérée) > 4 (basse) > 5 (planification)
-					comparison = a.priority - b.priority;
-					break;
-				}
-				case "status": {
-					// Ordre métier des statuts : 1 (nouveau) < 2 (en cours) < 3 (en attente) < 7 (fermé) < 8 (annulé)
-					comparison = a.status - b.status;
-					break;
-				}
-				case "createdAt":
-					comparison = a.createdAt.getTime() - b.createdAt.getTime();
-					break;
-				case "dueDate":
-					if (!a.dueDate && !b.dueDate) comparison = 0;
-					else if (!a.dueDate) comparison = 1;
-					else if (!b.dueDate) comparison = -1;
-					else comparison = a.dueDate.getTime() - b.dueDate.getTime();
-					break;
-			}
-
-			return sortOrder === "desc" ? -comparison : comparison;
-		});
-
-		return sorted;
-	}, [tasks, filterStatus, filterPriority, filterCategory, sortBy, sortOrder]);
-
 	return {
 		tasks,
 		newTask,
 		setNewTask,
 		isAddingTask,
 		setIsAddingTask,
-		filterStatus,
-		setFilterStatus,
-		filterPriority,
-		setFilterPriority,
-		filterCategory,
-		setFilterCategory,
-		sortBy,
-		setSortBy,
-		sortOrder,
-		setSortOrder,
-		filteredAndSortedTasks,
 		addTask,
 		toggleTask,
 		deleteTask,

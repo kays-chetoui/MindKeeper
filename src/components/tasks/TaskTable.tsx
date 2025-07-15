@@ -5,6 +5,7 @@ import type { Task } from "../../types/task";
 import type { TableColumn } from "../../types/columns";
 import { getPriorityColor, getStatusColor, formatDate, isTaskOverdue } from "../../utils/taskUtils";
 import { useTableColumns } from "../../hooks/useTableColumns";
+import { useCategories } from "../../hooks/useCategories";
 import { ColumnConfigModal } from "./ColumnConfigModal";
 
 interface TaskTableProps {
@@ -16,7 +17,22 @@ interface TaskTableProps {
 export const TaskTable: React.FC<TaskTableProps> = ({ tasks, totalTasksCount, onDeleteTask }) => {
 	const { t } = useTranslation();
 	const { columns, visibleColumns, toggleColumnVisibility, reorderColumns, resetToDefault } = useTableColumns();
+	const { getCategoryColor } = useCategories();
 	const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
+
+	const getCategoryColorClass = (color: string) => {
+		const colorClasses = {
+			gray: "bg-gray-100 text-gray-800 border-gray-200",
+			blue: "bg-blue-100 text-blue-800 border-blue-200",
+			green: "bg-green-100 text-green-800 border-green-200",
+			purple: "bg-purple-100 text-purple-800 border-purple-200",
+			yellow: "bg-yellow-100 text-yellow-800 border-yellow-200",
+			red: "bg-red-100 text-red-800 border-red-200",
+			indigo: "bg-indigo-100 text-indigo-800 border-indigo-200",
+			pink: "bg-pink-100 text-pink-800 border-pink-200",
+		};
+		return colorClasses[color as keyof typeof colorClasses] || colorClasses.gray;
+	};
 
 	const renderCell = (task: Task, column: TableColumn) => {
 		switch (column.id) {
@@ -36,7 +52,7 @@ export const TaskTable: React.FC<TaskTableProps> = ({ tasks, totalTasksCount, on
 
 			case "category":
 				return task.category ? (
-					<span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 border border-purple-200">{task.category}</span>
+					<span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getCategoryColorClass(getCategoryColor(task.category))}`}>{task.category}</span>
 				) : (
 					<span className="text-sm text-gray-400 italic">{t("tasks.noCategory")}</span>
 				);
@@ -187,7 +203,7 @@ export const TaskTable: React.FC<TaskTableProps> = ({ tasks, totalTasksCount, on
 								{/* Ligne 2: Category (si présente) */}
 								{task.category && (
 									<div>
-										<span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 border border-purple-200">
+										<span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getCategoryColorClass(getCategoryColor(task.category))}`}>
 											{task.category}
 										</span>
 									</div>

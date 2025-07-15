@@ -1,34 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { useTasks } from "../hooks/useTasks";
-import { TaskFilters } from "../components/tasks/TaskFilters";
+import { AdvancedFilters } from "../components/tasks/AdvancedFilters";
 import { TaskForm } from "../components/tasks/TaskForm";
 import { TaskTable } from "../components/tasks/TaskTable";
+import type { Task } from "../types/task";
 
 const TasksPage: React.FC = () => {
 	const { t } = useTranslation();
+	const { tasks, newTask, setNewTask, isAddingTask, setIsAddingTask, addTask, deleteTask } = useTasks();
+	const [filteredTasks, setFilteredTasks] = useState<Task[]>(tasks);
 
-	const {
-		tasks,
-		newTask,
-		setNewTask,
-		isAddingTask,
-		setIsAddingTask,
-		filterStatus,
-		setFilterStatus,
-		filterPriority,
-		setFilterPriority,
-		filterCategory,
-		setFilterCategory,
-		sortBy,
-		setSortBy,
-		sortOrder,
-		setSortOrder,
-		filteredAndSortedTasks,
-		addTask,
-		deleteTask,
-	} = useTasks();
+	// Gérer les tâches filtrées par les filtres avancés
+	const handleFilteredTasksChange = (filtered: Task[]) => {
+		setFilteredTasks(filtered);
+	};
+
+	// Mettre à jour filteredTasks quand les tâches changent
+	React.useEffect(() => {
+		setFilteredTasks(tasks);
+	}, [tasks]);
 
 	return (
 		<div className="min-h-screen">
@@ -55,26 +47,14 @@ const TasksPage: React.FC = () => {
 					</button>
 				</div>
 
-				{/* Filtres et Tri */}
-				<TaskFilters
-					tasks={tasks}
-					filterStatus={filterStatus}
-					setFilterStatus={setFilterStatus}
-					filterPriority={filterPriority}
-					setFilterPriority={setFilterPriority}
-					filterCategory={filterCategory}
-					setFilterCategory={setFilterCategory}
-					sortBy={sortBy}
-					setSortBy={setSortBy}
-					sortOrder={sortOrder}
-					setSortOrder={setSortOrder}
-				/>
+				{/* Filtres Avancés */}
+				<AdvancedFilters tasks={tasks} onFilteredTasksChange={handleFilteredTasksChange} />
 
 				{/* Add Task Form */}
 				{isAddingTask && <TaskForm newTask={newTask} setNewTask={setNewTask} onSubmit={addTask} onCancel={() => setIsAddingTask(false)} />}
 
 				{/* Tasks Table */}
-				<TaskTable tasks={filteredAndSortedTasks} totalTasksCount={tasks.length} onDeleteTask={deleteTask} />
+				<TaskTable tasks={filteredTasks} totalTasksCount={tasks.length} onDeleteTask={deleteTask} />
 			</div>
 		</div>
 	);

@@ -88,6 +88,28 @@ const resources = {
         noTags: "No tags",
         noStartDate: "No start date",
         allCategories: "All Categories",
+        // Category management
+        manageCategories: "Manage Categories",
+        addNewCategory: "Add New Category",
+        categoryNamePlaceholder: "Category name...",
+        selectCategory: "Select a category",
+        manage: "Manage",
+        defaultCategory: "Default",
+        // Advanced Filters  
+        advancedFilters: "Filters",
+        addCondition: "Add Condition",
+        field: "Field",
+        operator: "Operator", 
+        value: "Value",
+        logicalOperator: "Logical Operator",
+        removeCondition: "Remove Condition",
+        clearAllConditions: "Clear All",
+        enableAdvancedFilters: "Enable Advanced Filters",
+        selectValue: "Select a value",
+        enterValue: "Enter a value",
+        enterTagsCommaSeparated: "Enter tags separated by commas",
+        noConditionsYet: "No conditions yet",
+        addConditionToStart: "Add a condition to start filtering",
         // Statuts numériques (1=nouveau, 2=en cours, 3=en attente, 7=fermé, 8=annulé)
         status1: "New",
         status2: "In Progress",
@@ -113,7 +135,34 @@ const resources = {
       // Common
       common: {
         cancel: "Cancel",
-        save: "Save"
+        save: "Save",
+        close: "Close",
+        add: "Add",
+        edit: "Edit",
+        delete: "Delete"
+      },
+      // Filters
+      filters: {
+        operators: {
+          equals: "Equals",
+          notEquals: "Not Equals",
+          contains: "Contains",
+          notContains: "Not Contains",
+          greaterThan: "Greater Than",
+          lessThan: "Less Than",
+          greaterThanOrEqual: "Greater Than or Equal",
+          lessThanOrEqual: "Less Than or Equal",
+          isEmpty: "Is Empty",
+          isNotEmpty: "Is Not Empty",
+          startsWith: "Starts With",
+          endsWith: "Ends With",
+          isOneOf: "Is One Of",
+          isNotOneOf: "Is Not One Of"
+        },
+        logicalOperators: {
+          and: "AND",
+          or: "OR"
+        }
       }
     }
   },
@@ -202,6 +251,28 @@ const resources = {
         noTags: "Aucune étiquette",
         noStartDate: "Pas de date de début",
         allCategories: "Toutes les catégories",
+        // Category management
+        manageCategories: "Gérer les catégories",
+        addNewCategory: "Ajouter une nouvelle catégorie",
+        categoryNamePlaceholder: "Nom de la catégorie...",
+        selectCategory: "Sélectionner une catégorie",
+        manage: "Gérer",
+        defaultCategory: "Par défaut",
+        // Advanced Filters
+        advancedFilters: "Filtres",
+        addCondition: "Ajouter une Condition",
+        field: "Champ",
+        operator: "Opérateur",
+        value: "Valeur",
+        logicalOperator: "Opérateur Logique",
+        removeCondition: "Supprimer la Condition",
+        clearAllConditions: "Tout Effacer",
+        enableAdvancedFilters: "Activer les Filtres Avancés",
+        selectValue: "Sélectionner une valeur",
+        enterValue: "Saisir une valeur",
+        enterTagsCommaSeparated: "Saisir les étiquettes séparées par des virgules",
+        noConditionsYet: "Aucune condition pour le moment",
+        addConditionToStart: "Ajoutez une condition pour commencer le filtrage",
         // Statuts numériques (1=nouveau, 2=en cours, 3=en attente, 7=fermé, 8=annulé)
         status1: "Nouveau",
         status2: "En cours",
@@ -227,7 +298,34 @@ const resources = {
       // Common
       common: {
         cancel: "Annuler",
-        save: "Sauvegarder"
+        save: "Sauvegarder",
+        close: "Fermer",
+        add: "Ajouter",
+        edit: "Modifier",
+        delete: "Supprimer"
+      },
+      // Filters
+      filters: {
+        operators: {
+          equals: "Égal à",
+          notEquals: "Différent de",
+          contains: "Contient",
+          notContains: "Ne contient pas",
+          greaterThan: "Supérieur à",
+          lessThan: "Inférieur à",
+          greaterThanOrEqual: "Supérieur ou égal à",
+          lessThanOrEqual: "Inférieur ou égal à",
+          isEmpty: "Est vide",
+          isNotEmpty: "N'est pas vide",
+          startsWith: "Commence par",
+          endsWith: "Se termine par",
+          isOneOf: "Est l'un de",
+          isNotOneOf: "N'est aucun de"
+        },
+        logicalOperators: {
+          and: "ET",
+          or: "OU"
+        }
       }
     }
   }

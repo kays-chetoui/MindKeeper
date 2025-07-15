@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Cog6ToothIcon } from "@heroicons/react/24/outline";
 import type { NewTask } from "../../types/task";
+import { useCategories } from "../../hooks/useCategories";
+import { CategoryManagerModal } from "./CategoryManagerModal";
 
 interface TaskFormProps {
 	newTask: NewTask;
@@ -11,6 +14,22 @@ interface TaskFormProps {
 
 export const TaskForm: React.FC<TaskFormProps> = ({ newTask, setNewTask, onSubmit, onCancel }) => {
 	const { t } = useTranslation();
+	const { categories, getCategoryColor } = useCategories();
+	const [isCategoryManagerOpen, setIsCategoryManagerOpen] = useState(false);
+
+	const getCategoryColorClass = (color: string) => {
+		const colorClasses = {
+			gray: "bg-gray-100 text-gray-800 border-gray-200",
+			blue: "bg-blue-100 text-blue-800 border-blue-200",
+			green: "bg-green-100 text-green-800 border-green-200",
+			purple: "bg-purple-100 text-purple-800 border-purple-200",
+			yellow: "bg-yellow-100 text-yellow-800 border-yellow-200",
+			red: "bg-red-100 text-red-800 border-red-200",
+			indigo: "bg-indigo-100 text-indigo-800 border-indigo-200",
+			pink: "bg-pink-100 text-pink-800 border-pink-200",
+		};
+		return colorClasses[color as keyof typeof colorClasses] || colorClasses.gray;
+	};
 
 	return (
 		<div className="bg-white/80 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-gray-200/60 mb-8">
@@ -29,14 +48,37 @@ export const TaskForm: React.FC<TaskFormProps> = ({ newTask, setNewTask, onSubmi
 						/>
 					</div>
 					<div>
-						<label className="block text-sm font-medium text-gray-700 mb-2">{t("tasks.category")}</label>
-						<input
-							type="text"
+						<div className="flex items-center justify-between mb-2">
+							<label className="block text-sm font-medium text-gray-700">{t("tasks.category")}</label>
+							<button
+								type="button"
+								onClick={() => setIsCategoryManagerOpen(true)}
+								className="inline-flex items-center px-2 py-1 text-xs text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded transition-colors"
+								title={t("tasks.manageCategories")}
+							>
+								<Cog6ToothIcon className="h-3 w-3 mr-1" />
+								{t("tasks.manage")}
+							</button>
+						</div>
+						<select
 							value={newTask.category}
 							onChange={(e) => setNewTask({ ...newTask, category: e.target.value })}
 							className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200"
-							placeholder="Ex: Travail, Personnel, Urgence..."
-						/>
+						>
+							<option value="">{t("tasks.selectCategory")}</option>
+							{categories.map((category) => (
+								<option key={category.id} value={category.name}>
+									{category.name}
+								</option>
+							))}
+						</select>
+						{newTask.category && (
+							<div className="mt-2">
+								<span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${getCategoryColorClass(getCategoryColor(newTask.category))}`}>
+									{newTask.category}
+								</span>
+							</div>
+						)}
 					</div>
 				</div>
 
@@ -169,6 +211,9 @@ export const TaskForm: React.FC<TaskFormProps> = ({ newTask, setNewTask, onSubmi
 					</button>
 				</div>
 			</div>
+
+			{/* Category Manager Modal */}
+			<CategoryManagerModal isOpen={isCategoryManagerOpen} onClose={() => setIsCategoryManagerOpen(false)} />
 		</div>
 	);
 };
