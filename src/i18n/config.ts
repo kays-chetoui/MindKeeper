@@ -130,7 +130,16 @@ const resources = {
         moveDown: "Move down",
         hideColumn: "Hide column",
         showColumn: "Show column",
-        resetToDefault: "Reset to default"
+        resetToDefault: "Reset to default",
+        // Multi-level sorting
+        multiLevelSort: "Multi-Level Sort",
+        thenBy: "then by",
+        changeSortDirection: "Change sort direction",
+        removeSortCriteria: "Remove sort criteria",
+        selectFieldToSort: "Select a field to sort",
+        addSortCriteria: "Add Sort Criteria",
+        sortCriteriaCount: "{{count}} sort criteria",
+        clearAllSort: "Clear All Sort"
       },
       // Common
       common: {
@@ -293,7 +302,16 @@ const resources = {
         moveDown: "Descendre",
         hideColumn: "Masquer la colonne",
         showColumn: "Afficher la colonne",
-        resetToDefault: "Remettre par défaut"
+        resetToDefault: "Remettre par défaut",
+        // Tri multi-niveaux
+        multiLevelSort: "Tri Multi-Niveaux",
+        thenBy: "puis par",
+        changeSortDirection: "Changer la direction du tri",
+        removeSortCriteria: "Supprimer le critère de tri",
+        selectFieldToSort: "Sélectionner un champ à trier",
+        addSortCriteria: "Ajouter un Critère de Tri",
+        sortCriteriaCount: "{{count}} critères de tri",
+        clearAllSort: "Effacer Tout le Tri"
       },
       // Common
       common: {
